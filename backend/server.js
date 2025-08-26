@@ -12,11 +12,11 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 app.post("/api/ask", async (req, res) => {
   try {
-    const prompt = req.body.prompt;
+    const userMessage = req.body.prompt; 
 
     const finalPrompt = `
       You are a chatbot that specializes in giving guitar advice. Answer the user's question.
-      User's question: ${prompt}
+      User's question: ${userMessage}
     `;
 
     const result = await model.generateContent(finalPrompt);
