@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
 import "./App.css";
 
 function App() {
@@ -17,12 +18,11 @@ function App() {
     setIsLoading(true);
 
     try {
-      // Send message to backend
-      const response = await axios.post("http://localhost:3001/api/chat", {
-        message: userMessage.text,
+      const response = await axios.post("http://localhost:3001/api/ask", {
+        prompt: userMessage.text,
       });
 
-      const aiMessage = { text: response.data.reply, user: "ai" };
+      const aiMessage = { text: response.data.text, user: "ai" };
       setMessages((prevMessages) => [...prevMessages, aiMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -45,7 +45,11 @@ function App() {
         <div className="messages">
           {messages.map((msg, index) => (
             <div key={index} className={`message ${msg.user}`}>
-              {msg.text}
+              {msg.user === "ai" ? (
+                <ReactMarkdown>{msg.text}</ReactMarkdown>
+              ) : (
+                msg.text
+              )}
             </div>
           ))}
           {isLoading && <div className="loading-message ai">...</div>}
