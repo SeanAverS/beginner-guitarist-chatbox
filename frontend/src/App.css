@@ -74,16 +74,3 @@ body {
   margin-right: 10px;
   outline: none;
 }
-
-.message-form button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 20px;
-  background-color: #2db43f;
-  color: #fff;
-  cursor: pointer;
-}
-
-.message-form button:hover {
-  background-color: #2e95a4;
-}
