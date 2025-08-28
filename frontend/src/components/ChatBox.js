@@ -2,6 +2,8 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import { useMessages } from "../hooks/useMessages"; 
 
+// This component: 
+// Renders the chatbox and its messages 
 function ChatBox() {
   const { messages, input, isLoading, handleSendMessage, setInput } = useMessages();
 

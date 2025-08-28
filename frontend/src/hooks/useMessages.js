@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 
+// This hook: 
+// Manages the chat message state and server communication
 export function useMessages() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
