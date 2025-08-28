@@ -22,7 +22,7 @@ function ChatBox() {
             }
 
             return (
-              <div key={index} className={`message ${msg.user}`}>
+              <div key={index} className={`message ${msg.sender}`}>
                 {messageContent}
               </div>
             );

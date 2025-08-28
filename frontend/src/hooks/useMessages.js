@@ -10,7 +10,7 @@ export function useMessages() {
     e.preventDefault();
     if (input.trim() === "") return;
 
-    const userMessage = { text: input, user: "user" };
+    const userMessage = { text: input, sender: "user" };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setInput("");
     setIsLoading(true);
@@ -20,7 +20,7 @@ export function useMessages() {
         prompt: userMessage.text,
       });
 
-      const aiMessage = { text: response.data.text, user: "ai" };
+      const aiMessage = { text: response.data.text, sender: "ai" };
       setMessages((prevMessages) => [...prevMessages, aiMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
