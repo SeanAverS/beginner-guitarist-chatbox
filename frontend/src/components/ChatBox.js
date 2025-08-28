@@ -12,15 +12,21 @@ function ChatBox() {
       </header>
       <main className="chat-container">
         <div className="messages">
-          {messages.map((msg, index) => (
-            <div key={index} className={`message ${msg.user}`}>
-              {msg.user === "ai" ? (
-                <ReactMarkdown>{msg.text}</ReactMarkdown>
-              ) : (
-                msg.text
-              )}
-            </div>
-          ))}
+          {messages.map((msg, index) => {
+            let messageContent;
+
+            if (msg.user === "ai") {
+              messageContent = <ReactMarkdown>{msg.text}</ReactMarkdown>;
+            } else {
+              messageContent = msg.text;
+            }
+
+            return (
+              <div key={index} className={`message ${msg.user}`}>
+                {messageContent}
+              </div>
+            );
+          })}
           {isLoading && <div className="loading-message ai">...</div>}
         </div>
         <form className="message-form" onSubmit={handleSendMessage}>
