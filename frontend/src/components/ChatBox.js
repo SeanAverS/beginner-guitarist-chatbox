@@ -5,7 +5,7 @@ import { useMessages } from "../hooks/useMessages";
 // This component: 
 // Renders the chatbox and its messages 
 function ChatBox() {
-  const { messages, input, isLoading, handleSendMessage, setInput } = useMessages();
+  const { messages, userInput, isLoading, handleSendMessage, setInput } = useMessages();
 
   return (
     <div className="App">
@@ -34,7 +34,7 @@ function ChatBox() {
         <form className="message-form" onSubmit={handleSendMessage}>
           <input
             type="text"
-            value={input}
+            value={userInput}
             onChange={(e) => setInput(e.target.value)}
             placeholder="How can I help?"
             disabled={isLoading}

@@ -5,14 +5,14 @@ import axios from "axios";
 // Manages the chat message state and server communication
 export function useMessages() {
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
+  const [userInput, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (input.trim() === "") return;
+    if (userInput.trim() === "") return;
 
-    const userMessage = { text: input, sender: "user" };
+    const userMessage = { text: userInput, sender: "user" };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setInput("");
     setIsLoading(true);
@@ -38,7 +38,7 @@ export function useMessages() {
 
   return {
     messages,
-    input,
+    userInput,
     isLoading,
     handleSendMessage,
     setInput,
