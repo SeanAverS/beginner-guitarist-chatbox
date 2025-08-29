@@ -28,7 +28,7 @@ export function useMessages() {
       console.error("Error sending message:", error);
       const errorMessage = {
         text: "Sorry, I am unable to respond right now.",
-        user: "ai",
+        sender: "ai",
       };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
     } finally {
