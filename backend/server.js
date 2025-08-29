@@ -18,14 +18,13 @@ app.post("/api/ask", async (req, res) => {
   try {
     const userMessage = req.body.prompt; 
 
-    const finalPrompt = `You are an AI specializing in guitar advice for beginners. Provide a detailed but concise answer to the following question. Answer the user's question directly: ${userMessage}`;
+    const prompt = `You are an AI specializing in guitar advice for beginners. Provide a detailed but concise answer to the following question. Answer the user's question directly: ${userMessage}`;
+    const promptResult = await model.generateContent(prompt);
 
-    const result = await model.generateContent(finalPrompt);
+    const aiResponse = await promptResult.response;
+    const aiMessage = aiResponse.text();
 
-    const response = await result.response;
-    const text = response.text();
-
-    res.json({ text });
+    res.json({ text: aiMessage });
   } catch (error) {
     console.error("Error generating content:", error);
     res.status(500).json({ error: "An error occurred with the AI service." });
