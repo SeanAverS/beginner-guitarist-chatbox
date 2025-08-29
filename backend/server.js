@@ -3,6 +3,9 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 
+// This file: 
+// communicates between the frontend and Google's AI API
+
 const app = express();
 app.use(express.json());
 app.use(cors());
