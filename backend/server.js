@@ -14,10 +14,7 @@ app.post("/api/ask", async (req, res) => {
   try {
     const userMessage = req.body.prompt; 
 
-    const finalPrompt = `
-      You are a chatbot that specializes in giving guitar advice. Answer the user's question.
-      User's question: ${userMessage}
-    `;
+    const finalPrompt = `Provide a detailed but concise answer to the following question. Answer the user's question directly: ${userMessage}`;
 
     const result = await model.generateContent(finalPrompt);
 
