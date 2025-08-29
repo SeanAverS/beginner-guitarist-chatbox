@@ -17,7 +17,7 @@ app.post("/api/ask", async (req, res) => {
   try {
     const userMessage = req.body.prompt; 
 
-    const finalPrompt = `Provide a detailed but concise answer to the following question. Answer the user's question directly: ${userMessage}`;
+    const finalPrompt = `You are an AI specializing in guitar advice for beginners. Provide a detailed but concise answer to the following question. Answer the user's question directly: ${userMessage}`;
 
     const result = await model.generateContent(finalPrompt);
 
