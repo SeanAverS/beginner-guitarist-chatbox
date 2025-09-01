@@ -19,7 +19,7 @@ function ChatBox() {
 
             if (msg.user === "ai") {
               messageContent = <ReactMarkdown>{msg.text}</ReactMarkdown>;
-            } else {
+            } else { // user message
               messageContent = msg.text;
             }
 
