@@ -17,7 +17,7 @@ function ChatBox() {
           {messages.map((msg, index) => {
             let messageContent;
 
-            if (msg.user === "ai") {
+            if (msg.sender === "ai") {
               messageContent = <ReactMarkdown>{msg.text}</ReactMarkdown>;
             } else { // user message
               messageContent = msg.text;
