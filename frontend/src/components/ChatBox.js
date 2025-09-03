@@ -1,18 +1,19 @@
-import React from "react";
 import ReactMarkdown from "react-markdown";
-import { useMessages } from "../hooks/useMessages"; 
+import { useMessages } from "../hooks/useMessages";
+import { useScrollToBottom } from "../hooks/useScrollToBottom"; 
 
 // This component: 
 // Renders the chatbox and its messages 
 function ChatBox() {
   const { messages, userInput, isLoading, handleSendMessage, setInput } = useMessages();
+  const chatContainerRef = useScrollToBottom  (messages);
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>Beginner Guitarist Advice</h1>
       </header>
-      <main className="chat-container">
+      <main className="chat-container" ref={chatContainerRef}>
         <div className="messages">
           {messages.map((msg, index) => {
             let messageContent;
