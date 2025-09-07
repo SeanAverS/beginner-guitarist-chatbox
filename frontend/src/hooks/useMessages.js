@@ -8,6 +8,14 @@ export function useMessages() {
   const [userInput, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [chatId, setChatId] = useState(null);
+  const [chatFilename, setChatFilename] = useState(null);
+
+  const getFirstMessage = (messages) => {
+    if (messages.length === 2) { 
+      return messages[0].text;
+    }
+    return null;
+  };
 
   // id current chat
   useEffect(() => {
@@ -51,8 +59,21 @@ export function useMessages() {
 
   // save latest chat state in server
    const handleSaveChat = async (latestMessages) => {
+    const messagesObject = { messages: latestMessages, chatId, chatFilename };
+
+      const firstMessage = getFirstMessage(latestMessages);
+      if (firstMessage) {
+        messagesObject.firstMessage = firstMessage;
+      }
+
     try {
-      await axios.post("http://localhost:3001/api/save_chat", { messages: latestMessages, chatId });
+      const response = await axios.post("http://localhost:3001/api/save_chat", messagesObject);
+
+      // store generated chat name for future saves
+      if (response.data.chatFilename) {
+        setChatFilename(response.data.chatFilename);
+      }
+      
       console.log("Chat saved successfully!");
     } catch (error) {
       console.error("Failed to save chat:", error);
