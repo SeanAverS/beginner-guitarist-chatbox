@@ -6,7 +6,7 @@ import { useScrollToBottom } from "../hooks/useScrollToBottom";
 // Renders the chatbox and its messages 
 function ChatBox() {
   const { messages, userInput, isLoading, handleSendMessage, setInput } = useMessages();
-  const chatContainerRef = useScrollToBottom  (messages);
+  const chatContainerRef = useScrollToBottom(messages);
 
   return (
     <div className="App">
