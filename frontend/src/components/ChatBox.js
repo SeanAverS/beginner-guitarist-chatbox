@@ -1,12 +1,16 @@
 import ReactMarkdown from "react-markdown";
 import { useMessages } from "../hooks/useMessages";
 import { useScrollToBottom } from "../hooks/useScrollToBottom"; 
+import VoiceInput from "./VoiceInput";
 
 // This component: 
 // Renders the chatbox and its messages 
 function ChatBox() {
   const { messages, userInput, isLoading, handleSendMessage, setInput } = useMessages();
   const chatContainerRef = useScrollToBottom(messages);
+  const handleVoiceTranscript = (transcript) => {
+    setInput(transcript); 
+  };
 
   return (
     <div className="App">
@@ -40,6 +44,7 @@ function ChatBox() {
             placeholder="How can I help?"
             disabled={isLoading}
           />
+          <VoiceInput onTranscript={handleVoiceTranscript} />
         </form>
       </main>
     </div>
