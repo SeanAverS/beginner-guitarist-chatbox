@@ -42,7 +42,13 @@ const VoiceInput = ({ onTranscript }) => {
   };
 
   return (
-    <button type="button" onClick={handleVoiceInput} disabled={isListening}> Voice Input
+    <button
+      type="button"
+      onClick={handleVoiceInput}
+      className={`voice-input-button ${isListening ? "listening" : ""}`}
+      disabled={isListening}
+    >
+      <i className="fa-solid fa-microphone"></i>
     </button>
   );
 };
