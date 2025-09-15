@@ -1,12 +1,12 @@
 import ReactMarkdown from "react-markdown";
-import { useMessages } from "../hooks/useMessages";
+import { useCurrentChat } from "../hooks/useCurrentChat";
 import { useScrollToBottom } from "../hooks/useScrollToBottom"; 
 import VoiceInput from "./VoiceInput";
 
 // This component: 
 // Renders the chatbox and its messages 
 function ChatBox() {
-  const { messages, userInput, isLoading, handleSendMessage, setInput } = useMessages();
+  const { messages, userInput, isLoading, handleSendMessage, setInput } = useCurrentChat();
   const chatContainerRef = useScrollToBottom(messages);
   const handleVoiceTranscript = (transcript) => {
     setInput(transcript); 
