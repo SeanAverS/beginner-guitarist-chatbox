@@ -34,6 +34,50 @@ app.post("/api/ask", async (req, res) => {
   }
 });
 
+// get chat names for frontend display
+app.get('/api/get_chats', async (req, res) => {
+  const savedChatsFolder = 'saved_chats';
+  try {
+    const files = await fs.readdir(savedChatsFolder);
+    const chats = [];
+
+    // format file for computer
+    for (const file of files) {
+      if (path.extname(file) === '.json') {
+        const filePath = path.join(savedChatsFolder, file);
+        const fileContent = await fs.readFile(filePath, 'utf-8');
+        const messages = JSON.parse(fileContent);
+
+        // readable name for user
+        const firstMessage = messages.length > 0 ? messages[0].text : 'New Chat';
+
+        chats.push({ filename: file, firstMessage });
+      }
+    }
+    res.status(200).json(chats);
+  } catch (error) {
+    console.error("Failed to fetch chats:", error);
+    res.status(500).json({ error: 'Failed to fetch chats.' });
+  }
+});
+
+// load chosen chat content 
+app.get('/api/load_chat/:filename', async (req, res) => {
+  const filename = req.params.filename;
+  const savedChatsFolder = 'saved_chats';
+  const filePath = path.join(savedChatsFolder, filename);
+
+  try {
+    const fileContent = await fs.readFile(filePath, 'utf-8');
+    const messages = JSON.parse(fileContent);
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error(`Failed to load chat: ${filename}`, error);
+    res.status(404).json({ error: 'Chat not found.' });
+  }
+});
+
+
 // save chat history
 app.post('/api/save_chat', async (req, res) => {
   const { messages, chatId, firstMessage, chatFilename } = req.body;

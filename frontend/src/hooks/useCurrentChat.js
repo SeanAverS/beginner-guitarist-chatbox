@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 // This hook: 
@@ -24,6 +24,37 @@ export function useCurrentChat() {
     }
   }, [chatId]);
 
+  // save latest chat state in server
+   const handleSaveChat = useCallback(async (latestMessages) => {
+    const messagesObject = { messages: latestMessages, chatId, chatFilename };
+
+      const firstMessage = getFirstMessage(latestMessages);
+      if (firstMessage) {
+        messagesObject.firstMessage = firstMessage;
+      }
+
+    try {
+      const response = await axios.post("http://localhost:3001/api/save_chat", messagesObject);
+
+      // store generated chat name for future saves
+      if (response.data.chatFilename) {
+        setChatFilename(response.data.chatFilename);
+      }
+      
+      console.log("Chat saved successfully!");
+    } catch (error) {
+      console.error("Failed to save chat:", error);
+    }
+  }, [chatId, chatFilename]);
+
+  // save latest user/ai exchanges
+  useEffect(() => {
+    if (messages.length > 0 && messages[messages.length - 1].sender === "ai") {
+      handleSaveChat(messages);
+    }
+  }, [messages, handleSaveChat]);
+
+  
   // fetch latest user, ai message and store current chat state
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -57,34 +88,13 @@ export function useCurrentChat() {
     }
   };
 
-  // save latest chat state in server
-   const handleSaveChat = async (latestMessages) => {
-    const messagesObject = { messages: latestMessages, chatId, chatFilename };
-
-      const firstMessage = getFirstMessage(latestMessages);
-      if (firstMessage) {
-        messagesObject.firstMessage = firstMessage;
-      }
-
-    try {
-      const response = await axios.post("http://localhost:3001/api/save_chat", messagesObject);
-
-      // store generated chat name for future saves
-      if (response.data.chatFilename) {
-        setChatFilename(response.data.chatFilename);
-      }
-      
-      console.log("Chat saved successfully!");
-    } catch (error) {
-      console.error("Failed to save chat:", error);
-    }
-  };
-
   return {
     messages,
     userInput,
     isLoading,
     handleSendMessage,
     setInput,
+    setMessages,
+    setChatFilename
   };
 }
