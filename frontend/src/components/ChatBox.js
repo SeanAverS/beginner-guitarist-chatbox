@@ -3,6 +3,7 @@ import { useCurrentChat } from "../hooks/useCurrentChat";
 import { useScrollToBottom } from "../hooks/useScrollToBottom";
 import { useSavedChats } from "../hooks/useSavedChats";
 import VoiceInput from "./VoiceInput";
+import { useRef, useEffect } from "react"; 
 
 // This component: 
 // Renders the chatbox and its messages 
@@ -25,6 +26,8 @@ function ChatBox() {
     handleLoadChat 
   } = useSavedChats(setMessages, setChatFilename);
 
+  const sidebarRef = useRef(null); 
+
   const chatContainerRef = useScrollToBottom(messages);
   const handleVoiceTranscript = (transcript) => {
     setInput(transcript); 
@@ -39,6 +42,21 @@ function ChatBox() {
     }
   };
 
+  // Close sidebar 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setIsSavedChatsVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [sidebarRef, setIsSavedChatsVisible]); 
+
   return (
     <div className="App">
       <header className="App-header">
@@ -48,7 +66,7 @@ function ChatBox() {
         </button>
       </header>
 
-      <div className={`sidebar ${isSavedChatsVisible ? 'open' : ''}`}>
+      <div ref={sidebarRef} className={`sidebar ${isSavedChatsVisible ? 'open' : ''}`}>
         <div className="saved-chats-content">
           <h2>Saved Chats</h2>
           <ul>
