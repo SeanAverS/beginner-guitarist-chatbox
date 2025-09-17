@@ -3,10 +3,11 @@ import axios from "axios";
 
 // This hook:
 // fetches the saved_chats folder content
-// display the chat content of a chosen chat
-export function useSavedChats(setChosenChat, setChatFilename) {
+// display the chat content of a chat
+// hides the sidebar when the user clicks on a chosen chat
+export function useChatSidebar(setChosenChat, setChatFilename) {
   const [savedChats, setSavedChats] = useState([]);
-  const [isSavedChatsVisible, setIsSavedChatsVisible] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // fetch saved_chats folder content
   const fetchSavedChats = async () => {
@@ -19,12 +20,22 @@ export function useSavedChats(setChosenChat, setChatFilename) {
     }
   };
 
-  // display chat chosen by user
+   // open or close sidebar 
+  const handleSidebarToggle = () => { 
+    if (isSidebarOpen) {
+      setIsSidebarOpen(false);
+    } else {
+      fetchSavedChats();
+      setIsSidebarOpen(true);
+    }
+  };
+
+  // display chosen chat and close sidebar after
   const handleLoadChat = async (filename) => {
     try {
       const response = await axios.get(`http://localhost:3001/api/load_chat/${filename}`);
       setChosenChat(response.data); 
-      setIsSavedChatsVisible(false);
+      setIsSidebarOpen(false);
       setChatFilename(filename);
     } catch (error) {
       console.error("Failed to load chat:", error);
@@ -33,9 +44,9 @@ export function useSavedChats(setChosenChat, setChatFilename) {
 
   return {
     savedChats,
-    isSavedChatsVisible,
-    setIsSavedChatsVisible,
-    fetchSavedChats,
+    isSidebarOpen,
+    setIsSidebarOpen,
     handleLoadChat,
+    handleSidebarToggle,
   };
 }

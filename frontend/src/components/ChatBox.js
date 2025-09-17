@@ -1,7 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import { useCurrentChat } from "../hooks/useCurrentChat";
 import { useScrollToBottom } from "../hooks/useScrollToBottom";
-import { useSavedChats } from "../hooks/useSavedChats";
+import { useChatSidebar } from "../hooks/useChatSidebar";
 import VoiceInput from "./VoiceInput";
 import { useRef, useEffect } from "react"; 
 
@@ -20,11 +20,11 @@ function ChatBox() {
   
   const { 
     savedChats, 
-    isSavedChatsVisible, 
-    setIsSavedChatsVisible, 
-    fetchSavedChats, 
-    handleLoadChat 
-  } = useSavedChats(setMessages, setChatFilename);
+    isSidebarOpen, 
+    setIsSideBarOpen,  
+    handleLoadChat,
+    handleSidebarToggle
+  } = useChatSidebar(setMessages, setChatFilename);
 
   const sidebarRef = useRef(null); 
 
@@ -33,22 +33,11 @@ function ChatBox() {
     setInput(transcript); 
   };
 
-  // Toggles saved chats visibility from sidebar
-  const handleToggleChats = () => {
-  if (isSavedChatsVisible) {
-    setIsSavedChatsVisible(false);
-  } else {
-    fetchSavedChats();
-    setIsSavedChatsVisible(true);
-  }
-};
-
-
   // Close sidebar 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        setIsSavedChatsVisible(false);
+        setIsSideBarOpen(false);
       }
     };
 
@@ -57,18 +46,18 @@ function ChatBox() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [sidebarRef, setIsSavedChatsVisible]); 
+  }, [sidebarRef, setIsSideBarOpen]); 
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>Beginner Guitarist Advice</h1>
-        <button onClick={handleToggleChats}>
+        <button onClick={handleSidebarToggle}>
            <i className="fa-solid fa-bars"></i>
         </button>
       </header>
 
-      <div ref={sidebarRef} className={`sidebar ${isSavedChatsVisible ? 'open' : ''}`}>
+      <div ref={sidebarRef} className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="saved-chats-content">
           <h2>Saved Chats</h2>
           <ul>
