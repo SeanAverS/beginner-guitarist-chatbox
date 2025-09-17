@@ -4,7 +4,7 @@ import axios from "axios";
 // This hook:
 // fetches the saved_chats folder content
 // display the chat content of a chosen chat
-export function useSavedChats(setMessages, setChatFilename) {
+export function useSavedChats(setChosenChat, setChatFilename) {
   const [savedChats, setSavedChats] = useState([]);
   const [isSavedChatsVisible, setIsSavedChatsVisible] = useState(false);
 
@@ -23,8 +23,8 @@ export function useSavedChats(setMessages, setChatFilename) {
   const handleLoadChat = async (filename) => {
     try {
       const response = await axios.get(`http://localhost:3001/api/load_chat/${filename}`);
-      setMessages(response.data); 
-      setIsSavedChatsVisible(false); 
+      setChosenChat(response.data); 
+      setIsSavedChatsVisible(false);
       setChatFilename(filename);
     } catch (error) {
       console.error("Failed to load chat:", error);
