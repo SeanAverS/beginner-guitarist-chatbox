@@ -33,14 +33,16 @@ function ChatBox() {
     setInput(transcript); 
   };
 
-  // Toggles saved chats visibility
+  // Toggles saved chats visibility from sidebar
   const handleToggleChats = () => {
-    const newVisibility = !isSavedChatsVisible;
-    setIsSavedChatsVisible(newVisibility);
-    if (newVisibility) {
-      fetchSavedChats();
-    }
-  };
+  if (isSavedChatsVisible) {
+    setIsSavedChatsVisible(false);
+  } else {
+    fetchSavedChats();
+    setIsSavedChatsVisible(true);
+  }
+};
+
 
   // Close sidebar 
   useEffect(() => {
