@@ -44,25 +44,27 @@ function ChatBox() {
       <header className="App-header">
         <h1>Beginner Guitarist Advice</h1>
         <button onClick={handleToggleChats}>
-          {isSavedChatsVisible ? 'Hide Saved Chats' : 'Show Saved Chats'}
+           <i className="fa-solid fa-bars"></i>
         </button>
       </header>
+
+      <div className={`sidebar ${isSavedChatsVisible ? 'open' : ''}`}>
+        <div className="saved-chats-content">
+          <h2>Saved Chats</h2>
+          <ul>
+            {savedChats.map((chat) => (
+              <li 
+                key={chat.filename} 
+                onClick={() => handleLoadChat(chat.filename)}
+              >
+                {chat.firstMessage}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
       <main className="chat-container" ref={chatContainerRef}>
-        {isSavedChatsVisible ? (
-          <div className="saved-chats-list">
-            <h2>Saved Chats</h2>
-            <ul>
-              {savedChats.map((chat) => (
-                <li 
-                  key={chat.filename} 
-                  onClick={() => handleLoadChat(chat.filename)}
-                >
-                  {chat.firstMessage}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
         <div className="messages">
           {messages.map((msg, index) => {
             let messageContent;
@@ -81,7 +83,7 @@ function ChatBox() {
             })}
             {isLoading && <div className="loading-message ai">...</div>}
           </div>
-        )}
+        
         <form 
           className="message-form" 
           onSubmit={handleSendMessage}
