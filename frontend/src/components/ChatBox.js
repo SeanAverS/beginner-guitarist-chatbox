@@ -21,7 +21,7 @@ function ChatBox() {
   const { 
     savedChats, 
     isSidebarOpen, 
-    setIsSideBarOpen,  
+    setIsSidebarOpen,  
     handleLoadChat,
     handleSidebarToggle
   } = useChatSidebar(setMessages, setChatFilename);
@@ -37,7 +37,7 @@ function ChatBox() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        setIsSideBarOpen(false);
+        setIsSidebarOpen(false);
       }
     };
 
@@ -46,7 +46,7 @@ function ChatBox() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [sidebarRef, setIsSideBarOpen]); 
+  }, [sidebarRef, setIsSidebarOpen]); 
 
   return (
     <div className="App">
