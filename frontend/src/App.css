@@ -56,6 +56,8 @@ body {
 .message-form {
   display: flex;
   padding-top: 10px;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .message-form input {
@@ -69,16 +71,13 @@ body {
   outline: none;
 }
 
-.voice-input-button {
+.voice-input-button, .new-chat-button {
   background-color: transparent; 
   border: 1px solid #666; 
   color: #aaa; 
   padding: 6px; 
   border-radius: 7px;
   cursor: pointer;
-  display: flex; 
-  align-items: center;
-  justify-content: center;
   font-size: 1.1em;
   transition: all 0.2s ease-in-out; 
 }
@@ -166,4 +165,8 @@ body {
   font-size: 0.8em;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.new-chat-button {
+  margin-right: 5px;
 }

@@ -15,7 +15,8 @@ function ChatBox() {
     handleSendMessage, 
     setInput, 
     setMessages, 
-    setChatFilename 
+    setChatFilename, 
+    handleNewChat
   } = useCurrentChat();
   
   const { 
@@ -104,6 +105,11 @@ function ChatBox() {
             placeholder="How can I help?"
             disabled={isLoading}
           />
+
+           <button type="button" onClick={handleNewChat} className="new-chat-button">
+      <i className="fa-solid fa-plus"></i>
+    </button>
+
           <VoiceInput onTranscript={handleVoiceTranscript} />
         </form>
       </main>

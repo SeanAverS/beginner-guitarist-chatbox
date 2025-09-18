@@ -88,6 +88,13 @@ export function useCurrentChat() {
     }
   };
 
+// start a new chat
+const handleNewChat = () => {
+  setMessages([]);
+  setInput("");
+  setChatFilename(null); 
+};
+
   return {
     messages,
     userInput,
@@ -95,6 +102,7 @@ export function useCurrentChat() {
     handleSendMessage,
     setInput,
     setMessages,
-    setChatFilename
+    setChatFilename, 
+    handleNewChat,
   };
 }
