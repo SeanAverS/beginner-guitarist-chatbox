@@ -51,10 +51,10 @@ function ChatBox() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Beginner Guitarist Advice</h1>
         <button onClick={handleSidebarToggle}>
            <i className="fa-solid fa-bars"></i>
         </button>
+        <h1>Beginner Guitar Advice</h1>
       </header>
 
       <div ref={sidebarRef} className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
