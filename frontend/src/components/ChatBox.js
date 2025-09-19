@@ -14,7 +14,8 @@ function ChatBox() {
     isLoading, 
     handleSendMessage, 
     setInput, 
-    setMessages, 
+    setMessages,
+    chatFilename, 
     setChatFilename, 
     handleNewChat
   } = useCurrentChat();
@@ -66,6 +67,8 @@ function ChatBox() {
               <li 
                 key={chat.filename} 
                 onClick={() => handleLoadChat(chat.filename)}
+                // compare useCurrentChat & useChatSideBar returns 
+                className={chat.filename === chatFilename ? 'active' : ''}
               >
                 {chat.firstMessage}
               </li>

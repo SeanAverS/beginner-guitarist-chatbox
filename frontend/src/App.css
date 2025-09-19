@@ -174,3 +174,8 @@ body {
 .new-chat-button {
   margin-right: 5px;
 }
+
+.sidebar li.active {
+  background-color: #61afef; 
+  font-weight: bold; 
+}

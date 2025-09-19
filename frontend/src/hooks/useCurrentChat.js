@@ -102,6 +102,7 @@ const handleNewChat = () => {
     handleSendMessage,
     setInput,
     setMessages,
+    chatFilename,
     setChatFilename, 
     handleNewChat,
   };
