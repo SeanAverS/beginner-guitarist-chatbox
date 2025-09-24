@@ -49,9 +49,9 @@ app.get('/api/get_chats', async (req, res) => {
         const messages = JSON.parse(fileContent);
 
         // readable name for user
-        const firstMessage = messages.length > 0 ? messages[0].text : 'New Chat';
+        const chatTitle = messages.length > 0 ? messages[0].text : 'New Chat';
 
-        chats.push({ filename: file, firstMessage });
+        chats.push({ filename: file, chatTitle });
       }
     }
     res.status(200).json(chats);
@@ -120,6 +120,50 @@ app.post('/api/save_chat', async (req, res) => {
     console.error("Error saving chat history:", error);
     res.status(500).json({ error: 'Failed to save chat history.' });
   }
+});
+
+// Rename a saved chat
+app.post('/api/rename_chat', async (req, res) => {
+    const { oldFilename, newTitle } = req.body;
+    const savedChatsFolder = 'saved_chats';
+    const filePath = path.join(savedChatsFolder, oldFilename);
+
+    // update old title with new title
+    try {
+        const fileContent = await fs.readFile(filePath, 'utf-8');
+        let chatData = JSON.parse(fileContent);
+
+        if (chatData.length > 0) {
+            const title = chatData[0]; 
+            title.text = newTitle.trim();
+        } else {
+             return res.status(400).json({ error: 'Cannot rename empty chat file.' });
+        }
+
+        await fs.writeFile(filePath, JSON.stringify(chatData, null, 2), 'utf-8');
+        
+        const updatedFiles = await fs.readdir(savedChatsFolder);
+        const updatedChats = [];
+
+        // display new title in sidebar
+        for (const file of updatedFiles) {
+            if (path.extname(file) === '.json') {
+                const updatedFilePath = path.join(savedChatsFolder, file);
+                const updatedContent = await fs.readFile(updatedFilePath, 'utf-8');
+                const messages = JSON.parse(updatedContent);
+
+                const chatTitle = messages.length > 0 ? messages[0].text : 'New Chat';
+                
+                updatedChats.push({ filename: file, chatTitle });
+            }
+        }
+        
+        res.status(200).json(updatedChats);
+
+    } catch (error) {
+        console.error("Failed to rename chat:", error);
+        res.status(500).json({ error: 'Failed to rename or save chat.' });
+    }
 });
 
 const PORT = process.env.PORT || 3001;

@@ -179,3 +179,16 @@ body {
   background-color: #61afef; 
   font-weight: bold; 
 }
+
+.rename-button {
+  background: none;
+  border: none;
+  margin-left: 5px;
+  cursor: pointer;
+  color: #fcfcfc; 
+  font-size: 1em;
+}
+
+.rename-button:hover {
+  color: #807f7f; 
+}

@@ -42,11 +42,33 @@ export function useChatSidebar(setChosenChat, setChatFilename) {
     }
   };
 
+  // rename a saved chat 
+  const handleRenameChat = async (oldFilename, newTitle) => {
+    // send old and new title to server
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/api/rename_chat",
+        {
+          oldFilename,
+          newTitle: newTitle.trim(),
+        }
+      );
+
+      // refresh sidebar 
+      setSavedChats(response.data);
+
+    } catch (error) {
+      console.error("Failed to rename chat:", error);
+      alert("Failed to rename chat. Check the console for details.");
+    }
+  };
+
   return {
     savedChats,
     isSidebarOpen,
     setIsSidebarOpen,
     handleLoadChat,
     handleSidebarToggle,
+    handleRenameChat,
   };
 }
