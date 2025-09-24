@@ -166,6 +166,42 @@ app.post('/api/rename_chat', async (req, res) => {
     }
 });
 
+// delete a chat
+app.delete('/api/delete_chat/:filename', async (req, res) => {
+    const filename = req.params.filename;
+    const savedChatsFolder = 'saved_chats';
+    const filePath = path.join(savedChatsFolder, filename);
+
+    // delete the chosen chat
+    try {
+        await fs.unlink(filePath); 
+        console.log(`Successfully deleted chat: ${filename}`);
+
+        // display updated chat list
+        const files = await fs.readdir(savedChatsFolder);
+        const updatedChats = [];
+
+        for (const file of files) {
+            if (path.extname(file) === '.json') {
+                const updatedFilePath = path.join(savedChatsFolder, file);
+                const fileContent = await fs.readFile(updatedFilePath, 'utf-8');
+                const messages = JSON.parse(fileContent);
+
+                const chatTitle = messages.length > 0 ? messages[0].text : 'New Chat';
+                updatedChats.push({ filename: file, chatTitle });
+            }
+        }
+        res.status(200).json(updatedChats);
+
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            return res.status(404).json({ error: 'Chat file not found.' });
+        }
+        console.error("Failed to delete chat:", error);
+        res.status(500).json({ error: 'Failed to delete chat.' });
+    }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

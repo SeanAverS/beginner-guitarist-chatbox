@@ -180,7 +180,7 @@ body {
   font-weight: bold; 
 }
 
-.rename-button {
+.rename-button, .delete-button {
   background: none;
   border: none;
   margin-left: 5px;
@@ -189,6 +189,6 @@ body {
   font-size: 1em;
 }
 
-.rename-button:hover {
+.rename-button:hover, .delete-button:hover {
   color: #807f7f; 
 }

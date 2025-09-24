@@ -5,6 +5,7 @@ import axios from "axios";
 // fetches the saved_chats folder content
 // display the chat content of a chat
 // hides the sidebar when the user clicks on a chosen chat
+// deletes a chosen chat
 export function useChatSidebar(setChosenChat, setChatFilename) {
   const [savedChats, setSavedChats] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -63,6 +64,20 @@ export function useChatSidebar(setChosenChat, setChatFilename) {
     }
   };
 
+  // delete a chat
+  const handleDeleteChat = async (filename) => {
+    try {
+      if (window.confirm("Are you sure you want to delete this chat?")) {
+        const response = await axios.delete(`http://localhost:3001/api/delete_chat/${filename}`);
+        setSavedChats(response.data); // Update chat list
+        alert("Chat deleted successfully!");
+      }
+    } catch (error) {
+      console.error("Failed to delete chat:", error);
+      alert("Failed to delete chat. Please try again.");
+    }
+  };
+
   return {
     savedChats,
     isSidebarOpen,
@@ -70,5 +85,6 @@ export function useChatSidebar(setChosenChat, setChatFilename) {
     handleLoadChat,
     handleSidebarToggle,
     handleRenameChat,
+    handleDeleteChat,
   };
 }

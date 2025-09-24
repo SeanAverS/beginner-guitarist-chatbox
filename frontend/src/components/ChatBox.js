@@ -26,7 +26,8 @@ function ChatBox() {
     setIsSidebarOpen,  
     handleLoadChat,
     handleSidebarToggle,
-    handleRenameChat
+    handleRenameChat,
+    handleDeleteChat,
   } = useChatSidebar(setMessages, setChatFilename);
 
   const sidebarRef = useRef(null); 
@@ -80,64 +81,78 @@ function ChatBox() {
     <div className="App">
       <header className="App-header">
         <button onClick={handleSidebarToggle}>
-           <i className="fa-solid fa-bars"></i>
+          <i className="fa-solid fa-bars"></i>
         </button>
         <h1>Beginner Guitar Advice</h1>
       </header>
 
-      <div ref={sidebarRef} className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+      <div
+        ref={sidebarRef}
+        className={`sidebar ${isSidebarOpen ? "open" : ""}`}
+      >
         <div className="saved-chats-content">
           <h2>Saved Chats</h2>
-        
-<ul>
-    {savedChats.map((chat) => (
-        // check if a file is being edited or not 
-        <li 
-            key={chat.filename} 
-            onClick={isBeingEdited(chat.filename) ? null : () => handleLoadChat(chat.filename)}
-            // css 
-            className={chat.filename === chatFilename ? 'active' : ''}
-        >
-            
-            {/* edit the current chat */}
-            {isBeingEdited(chat.filename) ? (
-                <form 
-                // submit new title to display
+
+          <ul>
+            {savedChats.map((chat) => (
+              // check if a file is being edited or not
+              <li
+                key={chat.filename}
+                onClick={
+                  isBeingEdited(chat.filename)
+                    ? null
+                    : () => handleLoadChat(chat.filename)
+                }
+                // css
+                className={chat.filename === chatFilename ? "active" : ""}
+              >
+                {/* edit the current chat */}
+                {isBeingEdited(chat.filename) ? (
+                  <form
+                    // submit new title to display
                     onSubmit={(e) => submitRename(e, chat.filename)}
-                    onClick={(e) => e.stopPropagation()} 
-                >
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <input
-                        type="text"
-                        value={newTitle}
-                        // user input
-                        onChange={(e) => setNewTitle(e.target.value)}
-                        // outside click
-                        onBlur={(e) => submitRename(e, chat.filename)} 
-                        autoFocus
+                      type="text"
+                      value={newTitle}
+                      // user input
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      // outside click
+                      onBlur={(e) => submitRename(e, chat.filename)}
+                      autoFocus
                     />
-                </form>
-            ) : (
-              // start new title process
-                <div className="chat-item-content">
-                    <span title={chat.chatTitle}>
-                        {chat.chatTitle} 
-                    </span>
-                    
+                  </form>
+                ) : (
+                  // start new title process
+                  <div className="chat-item-content">
+                    <span title={chat.chatTitle}>{chat.chatTitle}</span>
                     {/*edit button */}
-                    <button 
-                        className="rename-button"
-                        onClick={(e) => {
-                            e.stopPropagation(); 
-                            startRename(chat.filename, chat.chatTitle); 
-                        }}
+                    <button
+                      className="rename-button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startRename(chat.filename, chat.chatTitle);
+                      }}
                     >
-                        <i className="fa-solid fa-ellipsis"></i>
+                      <i className="fa-solid fa-ellipsis"></i>
                     </button>
-                </div>
-            )}
-        </li>
-    ))}
-</ul>
+
+                    {/* delete button */}
+                    <button
+                      className="delete-button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteChat(chat.filename);
+                      }}
+                    >
+                      <i class="fa-solid fa-x"></i>
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
@@ -148,7 +163,8 @@ function ChatBox() {
 
             if (msg.sender === "ai") {
               messageContent = <ReactMarkdown>{msg.text}</ReactMarkdown>;
-            } else { // user message
+            } else {
+              // user message
               messageContent = msg.text;
             }
 
@@ -156,15 +172,12 @@ function ChatBox() {
               <div key={index} className={`message ${msg.sender}`}>
                 {messageContent}
               </div>
-              );
-            })}
-            {isLoading && <div className="loading-message ai">...</div>}
-          </div>
-        
-        <form 
-          className="message-form" 
-          onSubmit={handleSendMessage}
-        >
+            );
+          })}
+          {isLoading && <div className="loading-message ai">...</div>}
+        </div>
+
+        <form className="message-form" onSubmit={handleSendMessage}>
           <input
             type="text"
             value={userInput}
@@ -173,9 +186,13 @@ function ChatBox() {
             disabled={isLoading}
           />
 
-           <button type="button" onClick={handleNewChat} className="new-chat-button">
-      <i className="fa-solid fa-plus"></i>
-    </button>
+          <button
+            type="button"
+            onClick={handleNewChat}
+            className="new-chat-button"
+          >
+            <i className="fa-solid fa-plus"></i>
+          </button>
 
           <VoiceInput onTranscript={handleVoiceTranscript} />
         </form>
