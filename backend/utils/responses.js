@@ -5,5 +5,10 @@ export const devMessage = (message, error) => {
 
 // Display errors to users
 export const userMessage = (res, statusCode, message) => {
-    res.status(statusCode).json({ error: message });
+    return res.status(statusCode).json({ error: message });
+};
+
+// Display success response
+export const successResponse = (res, data) => {
+    return res.status(200).json(data);
 };

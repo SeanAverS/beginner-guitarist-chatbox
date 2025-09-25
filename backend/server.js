@@ -5,7 +5,7 @@ import "dotenv/config";
 import { promises as fs } from 'fs';
 import path from 'path';
 import { getSavedChatList } from "./utils/getSavedChatList.js";
-import { devMessage, userMessage } from "./utils/responses.js";
+import { devMessage, userMessage, successResponse } from "./utils/responses.js";
 
 // This file: 
 // communicates between the frontend and Google's AI API
@@ -29,7 +29,7 @@ app.post("/api/ask", async (req, res) => {
     const aiResponse = await promptResult.response;
     const aiMessage = aiResponse.text();
 
-    res.json({ text: aiMessage });
+    return successResponse(res, { text: aiMessage });
   } catch (error) {
     devMessage("Error generating content:", error);
     return userMessage(res, 500, "An error occurred with the AI service.");
@@ -40,7 +40,7 @@ app.post("/api/ask", async (req, res) => {
 app.get('/api/get_chats', async (req, res) => {
   try {
     const chats = await getSavedChatList();
-    res.status(200).json(chats);
+    return successResponse(res, chats);
   } catch (error) {
     devMessage("Failed to fetch chats:", error);
     return userMessage(res, 500, 'Failed to fetch chats.');
@@ -56,7 +56,7 @@ app.get('/api/load_chat/:filename', async (req, res) => {
   try {
     const fileContent = await fs.readFile(filePath, 'utf-8');
     const messages = JSON.parse(fileContent);
-    res.status(200).json(messages);
+    return successResponse(res, messages);
   } catch (error) {
     devMessage(`Failed to load chat: ${filename}`, error);
     return userMessage(res, 404, 'Chat not found.');
@@ -101,7 +101,7 @@ app.post('/api/save_chat', async (req, res) => {
     await fs.mkdir(savedChatsFolder, { recursive: true });
     await fs.writeFile(savedChatsFilePath, JSON.stringify(messages, null, 2), 'utf-8');
     console.log(`Chat history saved to ${savedChatsFilePath}`);
-    res.status(200).json({ message: 'Chat history saved successfully!', chatFilename: savedFileName});
+    return successResponse(res, { message: 'Chat history saved successfully!', chatFilename: savedFileName});
   } catch (error) {
     devMessage("Error saving chat history:", error);
     return userMessage(res, 500, 'Failed to save chat history.');
@@ -123,18 +123,18 @@ app.post('/api/rename_chat', async (req, res) => {
             const title = chatData[0]; 
             title.text = newTitle.trim();
         } else {
-             return res.status(400).json({ error: 'Cannot rename empty chat file.' });
+             return userMessage(res, 500, 'Cannot rename empty chat file');
         }
 
         await fs.writeFile(filePath, JSON.stringify(chatData, null, 2), 'utf-8');
         
        const updatedChats = await getSavedChatList();
-        
-        res.status(200).json(updatedChats);
+
+      return successResponse(res, updatedChats);
 
     } catch (error) {
       devMessage("Failed to rename chat:", error);
-      return userMessage(res, 500, 'Failed to rename or save chat.');
+      return userMessage(res, 400, 'Failed to rename or save chat.');
     }
 });
 
@@ -150,7 +150,7 @@ app.delete('/api/delete_chat/:filename', async (req, res) => {
         console.log(`Successfully deleted chat: ${filename}`);
 
         const updatedChats = await getSavedChatList(); 
-        res.status(200).json(updatedChats);
+        return successResponse(res, updatedChats);
 
     } catch (error) {
         if (error.code === "ENOENT") {
