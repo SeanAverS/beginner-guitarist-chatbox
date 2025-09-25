@@ -5,6 +5,7 @@ import "dotenv/config";
 import { promises as fs } from 'fs';
 import path from 'path';
 import { getSavedChatList } from "./utils/getSavedChatList.js";
+import { devMessage, userMessage } from "./utils/responses.js";
 
 // This file: 
 // communicates between the frontend and Google's AI API
@@ -30,8 +31,8 @@ app.post("/api/ask", async (req, res) => {
 
     res.json({ text: aiMessage });
   } catch (error) {
-    console.error("Error generating content:", error);
-    res.status(500).json({ error: "An error occurred with the AI service." });
+    devMessage("Error generating content:", error);
+    return userMessage(res, 500, "An error occurred with the AI service.");
   }
 });
 
@@ -41,8 +42,8 @@ app.get('/api/get_chats', async (req, res) => {
     const chats = await getSavedChatList();
     res.status(200).json(chats);
   } catch (error) {
-    console.error("Failed to fetch chats:", error);
-    res.status(500).json({ error: 'Failed to fetch chats.' });
+    devMessage("Failed to fetch chats:", error);
+    return userMessage(res, 500, 'Failed to fetch chats.');
   }
 });
 
@@ -57,8 +58,8 @@ app.get('/api/load_chat/:filename', async (req, res) => {
     const messages = JSON.parse(fileContent);
     res.status(200).json(messages);
   } catch (error) {
-    console.error(`Failed to load chat: ${filename}`, error);
-    res.status(404).json({ error: 'Chat not found.' });
+    devMessage(`Failed to load chat: ${filename}`, error);
+    return userMessage(res, 404, 'Chat not found.');
   }
 });
 
@@ -83,7 +84,7 @@ app.post('/api/save_chat', async (req, res) => {
          const chatTitle = titleResult.response.text().trim();
          savedFileName = `${chatTitle}-${chatId}.json`;
        } catch (error) {
-         console.error("Error generating title with AI:", error);
+        devMessage("Error generating title with AI:", error);
          savedFileName = `chat_history_${chatId}.json`;
        }
      } else {
@@ -102,8 +103,8 @@ app.post('/api/save_chat', async (req, res) => {
     console.log(`Chat history saved to ${savedChatsFilePath}`);
     res.status(200).json({ message: 'Chat history saved successfully!', chatFilename: savedFileName});
   } catch (error) {
-    console.error("Error saving chat history:", error);
-    res.status(500).json({ error: 'Failed to save chat history.' });
+    devMessage("Error saving chat history:", error);
+    return userMessage(res, 500, 'Failed to save chat history.');
   }
 });
 
@@ -132,8 +133,8 @@ app.post('/api/rename_chat', async (req, res) => {
         res.status(200).json(updatedChats);
 
     } catch (error) {
-        console.error("Failed to rename chat:", error);
-        res.status(500).json({ error: 'Failed to rename or save chat.' });
+      devMessage("Failed to rename chat:", error);
+      return userMessage(res, 500, 'Failed to rename or save chat.');
     }
 });
 
@@ -152,11 +153,11 @@ app.delete('/api/delete_chat/:filename', async (req, res) => {
         res.status(200).json(updatedChats);
 
     } catch (error) {
-        if (error.code === 'ENOENT') {
-            return res.status(404).json({ error: 'Chat file not found.' });
+        if (error.code === "ENOENT") {
+          return userMessage(res, 404, "Chat file not found.");
         }
-        console.error("Failed to delete chat:", error);
-        res.status(500).json({ error: 'Failed to delete chat.' });
+        devMessage("Failed to delete chat:", error);
+        return userMessage(res, 500, 'Failed to delete chat.');
     }
 });
 
