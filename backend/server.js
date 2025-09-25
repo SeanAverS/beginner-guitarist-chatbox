@@ -4,6 +4,7 @@ import cors from "cors";
 import "dotenv/config";
 import { promises as fs } from 'fs';
 import path from 'path';
+import { getSavedChatList } from "./utils/getSavedChatList.js";
 
 // This file: 
 // communicates between the frontend and Google's AI API
@@ -36,24 +37,8 @@ app.post("/api/ask", async (req, res) => {
 
 // get chat names for frontend display
 app.get('/api/get_chats', async (req, res) => {
-  const savedChatsFolder = 'saved_chats';
   try {
-    const files = await fs.readdir(savedChatsFolder);
-    const chats = [];
-
-    // format file for computer
-    for (const file of files) {
-      if (path.extname(file) === '.json') {
-        const filePath = path.join(savedChatsFolder, file);
-        const fileContent = await fs.readFile(filePath, 'utf-8');
-        const messages = JSON.parse(fileContent);
-
-        // readable name for user
-        const chatTitle = messages.length > 0 ? messages[0].text : 'New Chat';
-
-        chats.push({ filename: file, chatTitle });
-      }
-    }
+    const chats = await getSavedChatList();
     res.status(200).json(chats);
   } catch (error) {
     console.error("Failed to fetch chats:", error);
@@ -142,21 +127,7 @@ app.post('/api/rename_chat', async (req, res) => {
 
         await fs.writeFile(filePath, JSON.stringify(chatData, null, 2), 'utf-8');
         
-        const updatedFiles = await fs.readdir(savedChatsFolder);
-        const updatedChats = [];
-
-        // display new title in sidebar
-        for (const file of updatedFiles) {
-            if (path.extname(file) === '.json') {
-                const updatedFilePath = path.join(savedChatsFolder, file);
-                const updatedContent = await fs.readFile(updatedFilePath, 'utf-8');
-                const messages = JSON.parse(updatedContent);
-
-                const chatTitle = messages.length > 0 ? messages[0].text : 'New Chat';
-                
-                updatedChats.push({ filename: file, chatTitle });
-            }
-        }
+       const updatedChats = await getSavedChatList();
         
         res.status(200).json(updatedChats);
 
@@ -177,20 +148,7 @@ app.delete('/api/delete_chat/:filename', async (req, res) => {
         await fs.unlink(filePath); 
         console.log(`Successfully deleted chat: ${filename}`);
 
-        // display updated chat list
-        const files = await fs.readdir(savedChatsFolder);
-        const updatedChats = [];
-
-        for (const file of files) {
-            if (path.extname(file) === '.json') {
-                const updatedFilePath = path.join(savedChatsFolder, file);
-                const fileContent = await fs.readFile(updatedFilePath, 'utf-8');
-                const messages = JSON.parse(fileContent);
-
-                const chatTitle = messages.length > 0 ? messages[0].text : 'New Chat';
-                updatedChats.push({ filename: file, chatTitle });
-            }
-        }
+        const updatedChats = await getSavedChatList(); 
         res.status(200).json(updatedChats);
 
     } catch (error) {
