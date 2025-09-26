@@ -12,3 +12,9 @@ export const handleApiError = (error, message, setMessages) => {
 export const handleSuccess = (message) => {
   console.log(message);
 };
+
+// a generic error handler for API requests
+export const handleRequestError = (error, message) => {
+  console.error(message, error);
+  alert(`${message}.`);
+};

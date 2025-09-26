@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { handleSuccess, handleRequestError } from "../utils/frontEndResponses.js";
 
 // This hook:
 // fetches the saved_chats folder content
@@ -15,9 +16,9 @@ export function useChatSidebar(setChosenChat, setChatFilename) {
     try {
       const response = await axios.get("http://localhost:3001/api/get_chats");
       setSavedChats(response.data);
-      console.log("Saved chats fetched:", response.data);
+      handleSuccess("Saved chats fetched:", response.data);
     } catch (error) {
-      console.error("Failed to fetch saved chats:", error);
+      handleRequestError(error, "Failed to fetch saved chats");
     }
   };
 
@@ -39,7 +40,7 @@ export function useChatSidebar(setChosenChat, setChatFilename) {
       setIsSidebarOpen(false);
       setChatFilename(filename);
     } catch (error) {
-      console.error("Failed to load chat:", error);
+      handleRequestError(error, "Failed to load chat");
     }
   };
 
@@ -59,8 +60,7 @@ export function useChatSidebar(setChosenChat, setChatFilename) {
       setSavedChats(response.data);
 
     } catch (error) {
-      console.error("Failed to rename chat:", error);
-      alert("Failed to rename chat. Check the console for details.");
+      handleRequestError(error, "Failed to rename chat");
     }
   };
 
@@ -73,8 +73,7 @@ export function useChatSidebar(setChosenChat, setChatFilename) {
         alert("Chat deleted successfully!");
       }
     } catch (error) {
-      console.error("Failed to delete chat:", error);
-      alert("Failed to delete chat. Please try again.");
+      handleRequestError(error, "Failed to delete chat");
     }
   };
 
