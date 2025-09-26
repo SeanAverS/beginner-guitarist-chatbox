@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { handleApiError, handleSuccess } from "../utils/frontEndResponses.js"
 
 // This hook: 
 // Manages the chat message state and server communication
@@ -41,9 +42,9 @@ export function useCurrentChat() {
         setChatFilename(response.data.chatFilename);
       }
       
-      console.log("Chat saved successfully!");
+      handleSuccess("Chat saved successfully!");
     } catch (error) {
-      console.error("Failed to save chat:", error);
+      handleApiError(error, "Failed to save chat:", setMessages);
     }
   }, [chatId, chatFilename]);
   
@@ -69,12 +70,7 @@ export function useCurrentChat() {
       // save to backend
       await handleSaveChat(latestMessages);
     } catch (error) {
-      console.error("Error sending message:", error);
-      const errorMessage = {
-        text: "Sorry, I am unable to respond right now.",
-        sender: "ai",
-      };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
+      handleApiError(error, "Error sending message:", setMessages);
     } finally {
       setIsLoading(false);
     }
