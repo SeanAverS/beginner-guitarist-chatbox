@@ -48,6 +48,7 @@ const VoiceInput = ({ onTranscript }) => {
       onClick={handleVoiceInput}
       className={`voice-input-button ${isListening ? "listening" : ""}`}
       disabled={isListening}
+      title="Voice Input"
     >
       <i className="fa-solid fa-microphone"></i>
     </button>

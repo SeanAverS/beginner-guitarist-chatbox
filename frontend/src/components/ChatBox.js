@@ -80,7 +80,7 @@ function ChatBox() {
   return (
     <div className="App">
       <header className="App-header">
-        <button onClick={handleSidebarToggle}>
+        <button onClick={handleSidebarToggle} title="Open Saved Chats">
           <i className="fa-solid fa-bars"></i>
         </button>
         <h1>Beginner Guitar Advice</h1>
@@ -130,6 +130,7 @@ function ChatBox() {
                     {/*edit button */}
                     <button
                       className="rename-button"
+                      title="Rename Chat"
                       onClick={(e) => {
                         e.stopPropagation();
                         startRename(chat.filename, chat.chatTitle);
@@ -141,6 +142,7 @@ function ChatBox() {
                     {/* delete button */}
                     <button
                       className="delete-button"
+                      title="Delete Chat"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteChat(chat.filename);
@@ -190,6 +192,7 @@ function ChatBox() {
             type="button"
             onClick={handleNewChat}
             className="new-chat-button"
+            title="New Chat"
           >
             <i className="fa-solid fa-plus"></i>
           </button>
