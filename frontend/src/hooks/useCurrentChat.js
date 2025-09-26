@@ -46,14 +46,6 @@ export function useCurrentChat() {
       console.error("Failed to save chat:", error);
     }
   }, [chatId, chatFilename]);
-
-  // save latest user/ai exchanges
-  useEffect(() => {
-    if (messages.length > 0 && messages[messages.length - 1].sender === "ai") {
-      handleSaveChat(messages);
-    }
-  }, [messages, handleSaveChat]);
-
   
   // fetch latest user, ai message and store current chat state
   const handleSendMessage = async (e) => {
