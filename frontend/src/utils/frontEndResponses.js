@@ -18,3 +18,8 @@ export const handleRequestError = (error, message) => {
   console.error(message, error);
   alert(`${message}.`);
 };
+
+// a generic error logger 
+export const logError = (message, error) => {
+  console.error(message, error);
+};

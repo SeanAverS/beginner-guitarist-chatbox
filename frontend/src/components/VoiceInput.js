@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { logError } from "../utils/frontEndResponses.js"
 
 // This component:
 // Creates a microphone input button
@@ -30,7 +31,7 @@ const VoiceInput = ({ onTranscript }) => {
     };
 
     recognition.onerror = (event) => {
-      console.error("Speech recognition error:", event.error);
+      logError("Speech recognition error:", event.error);
       setIsListening(false);
     };
 
