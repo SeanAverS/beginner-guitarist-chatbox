@@ -7,7 +7,7 @@ import { handleSuccess, handleRequestError } from "../utils/frontEndResponses.js
 // display the chat content of a chat
 // hides the sidebar when the user clicks on a chosen chat
 // deletes a chosen chat
-export function useChatSidebar(setChosenChat, setChatFilename) {
+export function useChatSidebar(setChosenChat, setChatFilename, chatFilename, handleNewChat) {
   const [savedChats, setSavedChats] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -69,6 +69,12 @@ export function useChatSidebar(setChosenChat, setChatFilename) {
     try {
       if (window.confirm("Are you sure you want to delete this chat?")) {
         const response = await axios.delete(`http://localhost:3001/api/delete_chat/${filename}`);
+
+      // check if current chat is the one being deleted
+      if (filename === chatFilename) {
+        handleNewChat();
+      }
+
         setSavedChats(response.data); // Update chat list
         alert("Chat deleted successfully!");
       }

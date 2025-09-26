@@ -28,7 +28,7 @@ function ChatBox() {
     handleSidebarToggle,
     handleRenameChat,
     handleDeleteChat,
-  } = useChatSidebar(setMessages, setChatFilename);
+  } = useChatSidebar(setMessages, setChatFilename, chatFilename, handleNewChat);
 
   const sidebarRef = useRef(null); 
 
