@@ -124,7 +124,7 @@ function ChatBox() {
                     />
                   </form>
                 ) : (
-                  // start new title process
+                  // non-editing mode
                   <div className="chat-item-content">
                     <span title={chat.chatTitle}>{chat.chatTitle}</span>
                     {/*edit button */}
