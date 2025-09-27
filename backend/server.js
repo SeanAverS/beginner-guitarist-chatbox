@@ -68,29 +68,32 @@ app.get('/api/load_chat/:filename', async (req, res) => {
 app.post('/api/save_chat', async (req, res) => {
   const { messages, chatId, firstMessage, chatFilename } = req.body;
 
-  let savedFileName;
+    const getSavedFileName = async () => {
+        if (chatFilename) {
+            return chatFilename;
+        }
 
-  // use existing chat name or generate new one
-   if (chatFilename) {
-     savedFileName = chatFilename;
-   } else {
-     if (firstMessage) {
-       try {
-         const prompt = `Generate a very concise, three-word filename (lowercase, hyphenated) for the following query. Do not include a file extension. Example: "john-mayer-vs-srv".
-        
-        Query: ${firstMessage}`;
+        // empty chat
+        if (!firstMessage) {
+            return `chat_history_${chatId}.json`;
+        }
 
-         const titleResult = await model.generateContent(prompt);
-         const chatTitle = titleResult.response.text().trim();
-         savedFileName = `${chatTitle}-${chatId}.json`;
-       } catch (error) {
-        devMessage("Error generating title with AI:", error);
-         savedFileName = `chat_history_${chatId}.json`;
-       }
-     } else {
-       savedFileName = `chat_history_${chatId}.json`;
-     }
-   }
+        // ai generated title 
+        try {
+            const prompt = `Generate a very concise, three-word filename (lowercase, hyphenated) for the following query. Do not include a file extension. Example: "john-mayer-vs-srv".
+            
+            Query: ${firstMessage}`;
+
+            const titleResult = await model.generateContent(prompt);
+            const chatTitle = titleResult.response.text().trim();
+            return `${chatTitle}-${chatId}.json`;
+        } catch (error) {
+            devMessage("Error generating title with AI:", error);
+            return `chat_history_${chatId}.json`;
+        }
+    };
+    
+    const savedFileName = await getSavedFileName(); 
 
   // save file in saved chats folder
   const savedChatsFolder = 'saved_chats';
