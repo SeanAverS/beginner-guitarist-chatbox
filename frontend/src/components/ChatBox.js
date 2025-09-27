@@ -1,8 +1,8 @@
 import Messages from "./Messages";
+import MessageForm from "./MessageForm";
 import { useCurrentChat } from "../hooks/useCurrentChat";
 import { useScrollToBottom } from "../hooks/useScrollToBottom";
 import { useChatSidebar } from "../hooks/useChatSidebar";
-import VoiceInput from "./VoiceInput";
 import { useRef, useEffect, useState } from "react"; 
 
 // This component: 
@@ -162,26 +162,14 @@ function ChatBox() {
         
       <Messages messages={messages} isLoading={isLoading} />
 
-        <form className="message-form" onSubmit={handleSendMessage}>
-          <input
-            type="text"
-            value={userInput}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="How can I help?"
-            disabled={isLoading}
-          />
-
-          <button
-            type="button"
-            onClick={handleNewChat}
-            className="new-chat-button"
-            title="New Chat"
-          >
-            <i className="fa-solid fa-plus"></i>
-          </button>
-
-          <VoiceInput onTranscript={handleVoiceTranscript} />
-        </form>
+       <MessageForm
+        userInput={userInput}
+        setInput={setInput}
+        handleSendMessage={handleSendMessage}
+        handleNewChat={handleNewChat}
+        handleVoiceTranscript={handleVoiceTranscript}
+        isLoading={isLoading}
+        />
       </main>
     </div>
   );
