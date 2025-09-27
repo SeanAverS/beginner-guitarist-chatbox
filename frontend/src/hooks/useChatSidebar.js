@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { handleSuccess, handleRequestError } from "../utils/frontEndResponses.js";
 
@@ -6,6 +6,7 @@ import { handleSuccess, handleRequestError } from "../utils/frontEndResponses.js
 // fetches the saved_chats folder content
 // display the chat content of a chat
 // hides the sidebar when the user clicks on a chosen chat
+// hides the sidebar when the user clicks outside the sidebar
 // deletes a chosen chat
 export function useChatSidebar(setChosenChat, setChatFilename, chatFilename, handleNewChat) {
   const [savedChats, setSavedChats] = useState([]);
@@ -83,6 +84,23 @@ export function useChatSidebar(setChosenChat, setChatFilename, chatFilename, han
     }
   };
 
+  const sidebarRef = useRef(null); 
+
+  // Close sidebar on outside click
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+          setIsSidebarOpen(false);
+        }
+      };
+  
+      document.addEventListener("mousedown", handleClickOutside);
+  
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [sidebarRef, setIsSidebarOpen]);
+
   return {
     savedChats,
     isSidebarOpen,
@@ -91,5 +109,6 @@ export function useChatSidebar(setChosenChat, setChatFilename, chatFilename, han
     handleSidebarToggle,
     handleRenameChat,
     handleDeleteChat,
+    sidebarRef
   };
 }

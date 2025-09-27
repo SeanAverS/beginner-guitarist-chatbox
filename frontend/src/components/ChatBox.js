@@ -4,7 +4,6 @@ import Sidebar from "./SideBar";
 import { useCurrentChat } from "../hooks/useCurrentChat";
 import { useScrollToBottom } from "../hooks/useScrollToBottom";
 import { useChatSidebar } from "../hooks/useChatSidebar";
-import { useRef, useEffect } from "react"; 
 
 // This component: 
 // Renders the chatbox and its messages 
@@ -23,35 +22,18 @@ function ChatBox() {
   
   const { 
     savedChats, 
-    isSidebarOpen, 
-    setIsSidebarOpen,  
+    isSidebarOpen,  
     handleLoadChat,
     handleSidebarToggle,
     handleRenameChat,
     handleDeleteChat,
+    sidebarRef,
   } = useChatSidebar(setMessages, setChatFilename, chatFilename, handleNewChat);
-
-  const sidebarRef = useRef(null); 
 
   const chatContainerRef = useScrollToBottom(messages);
   const handleVoiceTranscript = (transcript) => {
     setInput(transcript); 
   };
-
-  // Close sidebar 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        setIsSidebarOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [sidebarRef, setIsSidebarOpen]); 
 
   return (
     <div className="App">
