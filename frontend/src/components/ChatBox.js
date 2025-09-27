@@ -1,4 +1,4 @@
-import ReactMarkdown from "react-markdown";
+import Messages from "./Messages";
 import { useCurrentChat } from "../hooks/useCurrentChat";
 import { useScrollToBottom } from "../hooks/useScrollToBottom";
 import { useChatSidebar } from "../hooks/useChatSidebar";
@@ -159,25 +159,8 @@ function ChatBox() {
       </div>
 
       <main className="chat-container" ref={chatContainerRef}>
-        <div className="messages">
-          {messages.map((msg, index) => {
-            let messageContent;
-
-            if (msg.sender === "ai") {
-              messageContent = <ReactMarkdown>{msg.text}</ReactMarkdown>;
-            } else {
-              // user message
-              messageContent = msg.text;
-            }
-
-            return (
-              <div key={index} className={`message ${msg.sender}`}>
-                {messageContent}
-              </div>
-            );
-          })}
-          {isLoading && <div className="loading-message ai">...</div>}
-        </div>
+        
+      <Messages messages={messages} isLoading={isLoading} />
 
         <form className="message-form" onSubmit={handleSendMessage}>
           <input
