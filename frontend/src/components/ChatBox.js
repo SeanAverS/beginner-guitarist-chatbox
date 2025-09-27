@@ -4,6 +4,7 @@ import Sidebar from "./SideBar";
 import { useCurrentChat } from "../hooks/useCurrentChat";
 import { useScrollToBottom } from "../hooks/useScrollToBottom";
 import { useChatSidebar } from "../hooks/useChatSidebar";
+import Header from "./Header";
 
 // This component: 
 // Renders the chatbox and its messages 
@@ -37,12 +38,7 @@ function ChatBox() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <button onClick={handleSidebarToggle} title="Open Saved Chats">
-          <i className="fa-solid fa-bars"></i>
-        </button>
-        <h1>Beginner Guitar Advice</h1>
-      </header>
+       <Header handleSidebarToggle={handleSidebarToggle} />
 
       <Sidebar
       savedChats={savedChats}
