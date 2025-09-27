@@ -8,10 +8,10 @@ function Messages({ messages, isLoading }) {
       {messages.map((msg, index) => {
 
         let messageContent;
-        
+
         if (msg.sender === "ai") {
           messageContent = <ReactMarkdown>{msg.text}</ReactMarkdown>;
-        } else {
+        } else { // user message
           messageContent = msg.text;
         }
 
