@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { handleSuccess, handleRequestError } from "../utils/frontEndResponses.js";
+import { API_BASE_URL } from "../config.js";
 
 // This hook:
 // fetches the saved_chats folder content
@@ -15,7 +16,7 @@ export function useChatSidebar(setChosenChat, setChatFilename, chatFilename, han
   // fetch saved_chats folder content
   const fetchSavedChats = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/api/get_chats");
+      const response = await axios.get(`${API_BASE_URL}/api/get_chats`);
       setSavedChats(response.data);
       handleSuccess("Saved chats fetched:", response.data);
     } catch (error) {
@@ -36,7 +37,7 @@ export function useChatSidebar(setChosenChat, setChatFilename, chatFilename, han
   // display chosen chat and close sidebar after
   const handleLoadChat = async (filename) => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/load_chat/${filename}`);
+      const response = await axios.get(`${API_BASE_URL}/api/load_chat/${filename}`);
       setChosenChat(response.data); 
       setIsSidebarOpen(false);
       setChatFilename(filename);
@@ -49,8 +50,7 @@ export function useChatSidebar(setChosenChat, setChatFilename, chatFilename, han
   const handleRenameChat = async (oldFilename, newTitle) => {
     // send old and new title to server
     try {
-      const response = await axios.post(
-        "http://localhost:3001/api/rename_chat",
+      const response = await axios.post(`${API_BASE_URL}/api/rename_chat`,
         {
           oldFilename,
           newTitle: newTitle.trim(),
@@ -69,7 +69,7 @@ export function useChatSidebar(setChosenChat, setChatFilename, chatFilename, han
   const handleDeleteChat = async (filename) => {
     try {
       if (window.confirm("Are you sure you want to delete this chat?")) {
-        const response = await axios.delete(`http://localhost:3001/api/delete_chat/${filename}`);
+        const response = await axios.delete(`${API_BASE_URL}/api/delete_chat/${filename}`);
 
       // check if current chat is the one being deleted
       if (filename === chatFilename) {

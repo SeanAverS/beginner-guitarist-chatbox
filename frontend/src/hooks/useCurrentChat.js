@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { handleApiError, handleSuccess } from "../utils/frontEndResponses.js"
+import { API_BASE_URL } from "../config.js";
 
 // This hook: 
 // Manages the chat message state and server communication
@@ -35,7 +36,7 @@ export function useCurrentChat() {
       }
 
     try {
-      const response = await axios.post("http://localhost:3001/api/save_chat", messagesObject);
+      const response = await axios.post(`${API_BASE_URL}/api/save_chat`, messagesObject);
 
       // store generated chat name for future saves
       if (response.data.chatFilename) {
@@ -59,7 +60,7 @@ export function useCurrentChat() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:3001/api/ask", {
+      const response = await axios.post(`${API_BASE_URL}/api/ask`, {
         prompt: userMessage.text,
       });
 
