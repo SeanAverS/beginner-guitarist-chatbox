@@ -12,9 +12,8 @@ export const getSavedChatList = async () => {
             if (path.extname(file) === '.json') {
                 const filePath = path.join(savedChatsFolder, file);
                 const fileContent = await fs.readFile(filePath, 'utf-8');
-                const messages = JSON.parse(fileContent);
-                const chatTitle = messages.length > 0 ? messages[0].text : 'New Chat';
-                chats.push({ filename: file, chatTitle });
+                const chatData = JSON.parse(fileContent);
+                chats.push({ filename: file, chatTitle: chatData.meta.title });
             }
         }
         return chats;

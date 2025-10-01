@@ -55,8 +55,9 @@ app.get('/api/load_chat/:filename', async (req, res) => {
 
   try {
     const fileContent = await fs.readFile(filePath, 'utf-8');
-    const messages = JSON.parse(fileContent);
-    return successResponse(res, messages);
+    let chatData = JSON.parse(fileContent);
+
+    return successResponse(res, chatData.messages);
   } catch (error) {
     devMessage(`Failed to load chat: ${filename}`, error);
     return userMessage(res, 404, 'Chat not found.');
@@ -102,7 +103,15 @@ app.post('/api/save_chat', async (req, res) => {
   try {
     // check folder existence 
     await fs.mkdir(savedChatsFolder, { recursive: true });
-    await fs.writeFile(savedChatsFilePath, JSON.stringify(messages, null, 2), 'utf-8');
+
+    // generate file name
+    const chatData = {
+      meta: { title: firstMessage || "New Chat" },
+      messages
+    };
+
+    await fs.writeFile(savedChatsFilePath, JSON.stringify(chatData, null, 2), "utf-8");
+
     console.log(`Chat history saved to ${savedChatsFilePath}`);
     return successResponse(res, { message: 'Chat history saved successfully!', chatFilename: savedFileName});
   } catch (error) {
@@ -121,13 +130,7 @@ app.post('/api/rename_chat', async (req, res) => {
     try {
         const fileContent = await fs.readFile(filePath, 'utf-8');
         let chatData = JSON.parse(fileContent);
-
-        if (chatData.length > 0) {
-            const title = chatData[0]; 
-            title.text = newTitle.trim();
-        } else {
-             return userMessage(res, 500, 'Cannot rename empty chat file');
-        }
+        chatData.meta.title = newTitle.trim();
 
         await fs.writeFile(filePath, JSON.stringify(chatData, null, 2), 'utf-8');
         
