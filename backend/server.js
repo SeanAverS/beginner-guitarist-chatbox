@@ -6,6 +6,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { getSavedChatList } from "./utils/getSavedChatList.js";
 import { devMessage, userMessage, successResponse } from "./utils/responses.js";
+import slugify from "slugify";
 
 // This file: 
 // communicates between the frontend and Google's AI API
@@ -124,15 +125,22 @@ app.post('/api/save_chat', async (req, res) => {
 app.post('/api/rename_chat', async (req, res) => {
     const { oldFilename, newTitle } = req.body;
     const savedChatsFolder = 'saved_chats';
-    const filePath = path.join(savedChatsFolder, oldFilename);
+    const oldFilePath = path.join(savedChatsFolder, oldFilename);
 
     // update old title with new title
     try {
-        const fileContent = await fs.readFile(filePath, 'utf-8');
+        const fileContent = await fs.readFile(oldFilePath, 'utf-8');
         let chatData = JSON.parse(fileContent);
         chatData.meta.title = newTitle.trim();
 
-        await fs.writeFile(filePath, JSON.stringify(chatData, null, 2), 'utf-8');
+        await fs.writeFile(oldFilePath, JSON.stringify(chatData, null, 2), "utf-8");
+
+            // Generate new filename
+    const newFileName = `${slugify(newTitle.trim(), { lower: true })}.json`;
+    const newFilePath = path.join(savedChatsFolder, newFileName);
+
+    // Rename the file
+    await fs.rename(oldFilePath, newFilePath);
         
        const updatedChats = await getSavedChatList();
 
