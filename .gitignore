@@ -28,3 +28,13 @@ Thumbs.db
 venv
 
 saved_chats/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# FAISS index and embeddings
+chat_index.faiss
+*.bin
+
+chat_meta.json
