@@ -7,6 +7,7 @@ import path from 'path';
 import { getSavedChatList } from "./utils/getSavedChatList.js";
 import { devMessage, userMessage, successResponse } from "./utils/responses.js";
 import slugify from "slugify";
+import { spawn } from "child_process";
 
 // This file: 
 // communicates between the frontend and Google's AI API
@@ -173,6 +174,57 @@ app.delete('/api/delete_chat/:filename', async (req, res) => {
         devMessage("Failed to delete chat:", error);
         return userMessage(res, 500, 'Failed to delete chat.');
     }
+});
+
+// RAG: format query for frontend 
+app.post("/rag", async (req, res) => {
+  const userQuery = req.body.query;
+
+  if (!userQuery) {
+    return res.status(400).json({ error: "No query provided" });
+  }
+
+    const PYTHON_EXECUTABLE = "/home/sean/github_repos/beginner-guitarist-chatbox/venv/bin/python";
+
+  // format query for frontend
+  try {
+    const python = spawn(PYTHON_EXECUTABLE, ["rag_service.py"]);
+
+    let dataString = "";
+    let errorString = "";
+
+    // send query to Python 
+    python.stdin.write(JSON.stringify({ query: userQuery }));
+    python.stdin.end();
+    // response
+    python.stdout.on("data", (data) => {
+      //  console.log("PYTHON STDOUT:", data.toString());
+      dataString += data.toString();
+    });
+    // errors
+    python.stderr.on("data", (data) => {
+      //  console.error("PYTHON STDERR:", data.toString());
+      errorString += data.toString();
+    });
+
+    // format query to JSON 
+    python.on("close", (code) => {
+    try {
+        const response = JSON.parse(dataString);
+        res.json(response);
+    } catch (err) {
+        console.error("Error parsing Python response:", err);
+        console.error("Full Python output:", dataString);
+        res.status(500).json({ error: "Failed to parse Python response" });
+    }
+});
+
+    
+
+  } catch (err) {
+    console.error("Error running Python RAG service:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 const PORT = process.env.PORT || 3001;

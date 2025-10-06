@@ -1,5 +1,6 @@
 import json
 import faiss
+import sys
 from embedder import get_embedder
 
 # This compares the embeddings from the FAISS index with an embedded user query
@@ -17,7 +18,7 @@ class Retriever:
     @classmethod
     def init(cls):
         if cls._index is None:
-            print("[Retriever] Loading FAISS index...")
+            print("[Retriever] Loading FAISS index...", file=sys.stderr)
             cls._index = faiss.read_index(INDEX_FILE) 
             with open(META_FILE, "r", encoding="utf-8") as f: 
                 meta = json.load(f)

@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import glob
 import faiss
@@ -25,7 +26,7 @@ def load_saved_chats(folder="saved_chats"):
                         if msg["sender"] == "ai":
                             docs.append((msg["text"], {"source": file}))
                 except Exception as e:
-                    print(f"Error reading {file}: {e}")
+                    print(f"Error reading {file}: {e}", file=sys.stderr)
     return docs
 
 # get text from data folder
@@ -56,7 +57,7 @@ def build_index():
 
     docs = chat_docs + text_docs
     if not docs:
-        print("No documents found.")
+        print("No documents found.", file=sys.stderr)
         return
     
     # prepare embeddings 
@@ -72,7 +73,7 @@ def build_index():
     with open(META_FILE, "w", encoding="utf-8") as f:
         json.dump({"texts": texts, "metas": metas}, f, indent=2)
 
-    print(f"Indexed {len(texts)} items.")
+    print(f"Indexed {len(texts)} items.", file=sys.stderr)
 
 if __name__ == "__main__":
     build_index()
