@@ -198,12 +198,10 @@ app.post("/rag", async (req, res) => {
     python.stdin.end();
     // response
     python.stdout.on("data", (data) => {
-      //  console.log("PYTHON STDOUT:", data.toString());
       dataString += data.toString();
     });
     // errors
     python.stderr.on("data", (data) => {
-      //  console.error("PYTHON STDERR:", data.toString());
       errorString += data.toString();
     });
 
