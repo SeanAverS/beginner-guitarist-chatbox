@@ -186,33 +186,35 @@ app.post("/rag", async (req, res) => {
 
     const PYTHON_EXECUTABLE = "/home/sean/github_repos/beginner-guitarist-chatbox/venv/bin/python";
 
-  // format query for frontend
+  // format query with rag_service.py
   try {
     const python = spawn(PYTHON_EXECUTABLE, ["rag_service.py"]);
 
-    let dataString = "";
+    let ragOutput = "";
     let errorString = "";
 
-    // send query to Python 
+    // send query to rag_service.py
     python.stdin.write(JSON.stringify({ query: userQuery }));
     python.stdin.end();
-    // response
+
+    // response from rag_service.py (JSON)
     python.stdout.on("data", (data) => {
-      dataString += data.toString();
+      ragOutput += data.toString();
     });
-    // errors
+
+    // errors from rag_service.py (JSON)
     python.stderr.on("data", (data) => {
       errorString += data.toString();
     });
 
-    // format query to JSON 
+    // format JSON from rag_service.py for frontend display
     python.on("close", (code) => {
     try {
-        const response = JSON.parse(dataString);
-        res.json(response);
+        const response = JSON.parse(ragOutput);
+        res.json(response); // for frontend display
     } catch (err) {
         console.error("Error parsing Python response:", err);
-        console.error("Full Python output:", dataString);
+        console.error("Full Python output:", ragOutput);
         res.status(500).json({ error: "Failed to parse Python response" });
     }
 });
