@@ -2,9 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { handleApiError, handleSuccess } from "../utils/frontEndResponses.js"
 import { API_BASE_URL } from "../config.js";
+import { askRAG } from "../utils/api.js";
 
 // This hook: 
-// Manages the chat message state and server communication
+// Manages the chat message state and server communication for: 
+// Saving latest current chat state
+// RAG implementation 
 export function useCurrentChat() {
   const [messages, setMessages] = useState([]);
   const [userInput, setInput] = useState("");
@@ -59,12 +62,17 @@ export function useCurrentChat() {
     setInput("");
     setIsLoading(true);
 
+    // RAG implementation
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/ask`, {
-        prompt: userMessage.text,
-      });
+      // call RAG endpoint
+      const ragResult = await askRAG(userMessage.text);
 
-      const aiMessage = { text: response.data.text, sender: "ai" };
+      // RAG answer constructed form rag_service.py
+      const aiMessage = {
+        text: ragResult?.answer || "Sorry, no answer was generated.",
+        sender: "ai",
+      };
+
       const latestMessages = [...messages, userMessage, aiMessage];
       setMessages(latestMessages);
 
