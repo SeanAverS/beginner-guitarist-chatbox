@@ -1,20 +1,47 @@
-Title: Should I buy an electric or acoustic guitar? 
-Content: Get the one that your favorite artist plays, if you don't have a favorite pick the one that sounds better to you.
+Title: How often should I practice guitar? 
+Content: Everyday, even if its 5 minutes. each little bit helps.
 
-Title: Where should I start learning? 
-Content: Youtube. There's tons of resources there for you. I personally started out with learning songs by tab as it got me working towards a goal of playing a full song. 
+Title: How long does it take to get good at guitar?
+Content: If you wanna play like your heroes, you'll most likely never feel like you're good. If you play something and it makes you feel nice inside then you're already good.
 
-Title: Why do my hands hurt? 
-Content: It's normal. Your fingers will look like it's been through a cheese grater. Take breaks and don't continue if it hurts to the point of agonizing pain. 
+Title: How do I tune my guitar?
+Content: Download a guitar tuner app and turn the pegs until each string matches the tuning on the app.
 
-Title: What's a good electric guitar for a beginner? 
-Content: Any Squier Affinity Series or Epiphone Tribute Series ones. Pick one depending on how comfortable they are to play and the music you listen to. If you want one that's higher quality without breaking the bank go for a Squier Classic Vibe or Epiphone Standard series. 
+Title: Why does my guitar sound out of tune?
+Content: It's not tuned correctly or your ears think it's not tuned correctly. If it sounds right just keep playing.
 
-Title: What's a good acoustic guitar for a beginner? 
-Content: The yamaha fs830. comfortable body shape and neck. If you want one that's higher that's a bit more money go for the taylor gs mini.
+Title: What’s the easiest song to learn first?
+Content: 0-3-5. 
 
-Title: What other gear do I need? 
-Content: for both electric and acoustic, a capo and a pick. for electrics you need a amp and a guitar cable to connect your amp to your guitar. 
+Title: Should I start with acoustic or electric guitar?
+Content: Which ever one your favorite artist plays and you like the sound of more.
 
+Title: Why do my fingers hurt so much when I play?
+Content: It's normal, your digging your fingers into steel. Just keep at it and you'll develop calluses. 
 
+Title: How do I change guitar strings?
+Content: Youtube it. 
 
+Title: What size pick should I use?
+Content: Whatever feels best. Try what you favorite artist uses first.
+
+Title: What’s a good amp for beginners?
+Content: The Yamaha THR 10 or the Boss Katana MK2 are both well equipped, budget amps.
+
+Title: How do I know if my guitar needs to be set up?
+Content: When you feel like you have to fight it to make a sound. A cheap gutiar with a good setup can go a long way.
+
+Title: Why does my guitar buzz when I play certain notes?
+Content: Either you're pressing too hard/soft, or the guitar isn't set up properly. Keep at it. 
+
+Title: What’s the difference between single-coil and humbucker pickups?
+Content: Single coils sound like a sweet slow morning and Humbuckers sound like running through the mud.
+
+Title: Do I need to learn scales?
+Content: Yes. it's a good reference point when you're moving up and down the neck. Follow your ear. 
+
+Title: How do I strum properly? My rhythm feels off.
+Content: You have to feel the rhythm. Or else just use a metronome.
+
+Title: Can I learn guitar by myself or do I need lessons?
+Content: Youtube is a vast ocean of tutorials.
