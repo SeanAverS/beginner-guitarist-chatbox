@@ -80,9 +80,11 @@ def rag_answer(user_query):
 
     # Prepare prompt with FAISS index  
     prompt = (
-        f"Answer the following question using the provided context.\n\n"
+        "You are a beginner guitar assistant. Only use guitar-related information. Do not answer unrelated questions."
+        "The answer should be short but not too short. Be friendly and patient always!\n\n"
+        "If the context does not contain the answer, gracefully say you don't know about this question then only use your own knowledge to answer."
         f"Context:\n{context}\n\n"
-        f"Question: {user_query}\n\nAnswer:"
+        f"Question:\n{user_query}\n\nAnswer:"
     )
 
     start = time.time()
