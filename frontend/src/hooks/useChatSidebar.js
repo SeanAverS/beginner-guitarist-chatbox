@@ -68,21 +68,37 @@ export function useChatSidebar(setChosenChat, setChatFilename, chatFilename, han
   // delete a chat
   const handleDeleteChat = async (filename) => {
     try {
-      if (window.confirm("Are you sure you want to delete this chat?")) {
+    // display saved chats that were not deleted 
+    setSavedChats((prev) => prev.filter(chat => chat.filename !== filename));
+
         const response = await axios.delete(`${API_BASE_URL}/api/delete_chat/${filename}`);
 
-      // check if current chat is the one being deleted
-      if (filename === chatFilename) {
-        handleNewChat();
-      }
-
-        setSavedChats(response.data); // Update chat list
-        alert("Chat deleted successfully!");
-      }
-    } catch (error) {
-      handleRequestError(error, "Failed to delete chat");
+    // make sure response contains array
+    if (response?.data?.data && Array.isArray(response.data.data)) {
+      setSavedChats(response.data.data);
+    } else if (Array.isArray(response.data)) {
+      setSavedChats(response.data);
+    } else {
+      setSavedChats([]); 
     }
-  };
+
+    if (filename === chatFilename) {
+      handleNewChat();
+    }
+
+  } catch (error) {
+    handleRequestError(error, "Failed to delete chat");
+
+    // re-fetch chats for sidebar consistency
+    try {
+      const refreshResponse = await axios.get(`${API_BASE_URL}/api/get_chats`);
+      setSavedChats(Array.isArray(refreshResponse.data) ? refreshResponse.data : []);
+    } catch {
+      setSavedChats([]);
+    }
+  }
+};
+
 
   const sidebarRef = useRef(null); 
 
