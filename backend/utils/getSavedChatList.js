@@ -13,7 +13,7 @@ export const getSavedChatList = async () => {
                 const filePath = path.join(savedChatsFolder, file);
                 const fileContent = await fs.readFile(filePath, 'utf-8');
                 const chatData = JSON.parse(fileContent);
-                chats.push({ filename: file, chatTitle: chatData.meta.title });
+                chats.push({ filename: file, chatTitle: chatData?.meta?.title || "Untitled Chat" });
             }
         }
         return chats;
