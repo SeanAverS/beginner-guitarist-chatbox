@@ -16,11 +16,10 @@ export function useCurrentChat() {
   const [chatFilename, setChatFilename] = useState(null);
 
   const getFirstMessage = (messages) => {
-    if (messages.length === 2) { 
-      return messages[0].text;
-    }
-    return null;
+    const userMsg = messages.find((msg) => msg.sender === "user");
+    return userMsg ? userMsg.text.trim() : null;
   };
+
 
   // id current chat
   useEffect(() => {
