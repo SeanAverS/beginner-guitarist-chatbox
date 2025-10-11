@@ -1,5 +1,6 @@
 // src/components/Sidebar.js
 import { useState } from "react";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 // This component: 
 // displays all the saved chats in a collapsable sidebar
@@ -15,6 +16,26 @@ function Sidebar({
   handleRenameChat,
   handleDeleteChat,
 }) {
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [chatToDelete, setChatToDelete] = useState(null);
+
+  const confirmDelete = (chat) => {
+    setChatToDelete(chat);
+    setModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (chatToDelete) handleDeleteChat(chatToDelete.filename);
+    setModalOpen(false);
+    setChatToDelete(null);
+  };
+
+  const handleCancelDelete = () => {
+    setModalOpen(false);
+    setChatToDelete(null);
+  };
+
   const [editingFilename, setEditingFilename] = useState(null);
   const [newTitle, setNewTitle] = useState("");
 
@@ -74,6 +95,7 @@ function Sidebar({
                     title="Rename Chat"
                     onClick={(e) => {
                       e.stopPropagation();
+                      confirmDelete(chat);
                       startRename(chat.filename, chat.chatTitle);
                     }}
                   >
@@ -85,9 +107,9 @@ function Sidebar({
                     className="delete-button"
                     title="Delete Chat"
                     onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteChat(chat.filename);
-                    }}
+                    e.stopPropagation();setChatToDelete(chat); 
+                    setModalOpen(true);    
+                  }}
                   >
                     <i className="fa-solid fa-x"></i>
                   </button>
@@ -111,6 +133,13 @@ function Sidebar({
             );
           })}
         </ul>
+        
+      <ConfirmDeleteModal
+      isOpen={modalOpen}
+      chatTitle={chatToDelete?.chatTitle}
+      onConfirm={handleConfirmDelete}
+      onCancel={handleCancelDelete}
+      />
       </div>
     </div>
   );

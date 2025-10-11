@@ -212,3 +212,45 @@ body {
   border-radius: 10px;
   border: 2px solid #2a2a2a;
 }
+
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.confirm-modal {
+  background: #242525;
+  padding: 20px;
+  border-radius: 30px;
+  min-width: 190px;
+  text-align: center;
+  color: white;
+ }
+
+.confirm-modal-buttons {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.confirm-modal-buttons button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #333;
+  color: white;
+  border: none;
+  transition: background 0.2s ease;
+}
+
+.confirm-modal-buttons button:hover {
+  background: #555;
+}
