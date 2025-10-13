@@ -1,17 +1,12 @@
 import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-os.environ["FAISS_VERBOSE"] = "0"
 import sys
 import json
+import time
 import faiss
-# Redirect FAISS logs
-if hasattr(faiss, "io_redirect_stdout"):
-    faiss.io_redirect_stdout(sys.stderr)
-import google.generativeai as genai
 from dotenv import load_dotenv
+import google.generativeai as genai
 from ingest import load_saved_chats, load_text_files
 from query import Retriever
-import time
 
 # This will answer the user query using FAISS index and Gemini as context 
 
@@ -63,17 +58,7 @@ def rag_answer(user_query):
     context = "\n\n".join(context_sections)
 
     log("\n--- Retrieved Context for Gemini from FAISS ---")
-    if saved_chats:
-        log(f"{len(saved_chats)} saved chats:")
-        for _, meta in saved_chats:
-            log(f"- {meta['source']}")
-    else:
-        log("No saved chats included.")
-
-    if knowledge_docs:
-        log(f"{len(knowledge_docs)} data files:")
-        for doc in knowledge_docs:
-            log(f"- {doc['source']}")
+    log(f"Saved chats: {len(saved_chats)}, Knowledge docs: {len(knowledge_docs)}")
 
     # Build context using Gemini 
     model = genai.GenerativeModel("gemini-2.5-flash-lite")
@@ -128,7 +113,7 @@ def handle_query(query):
                         for _, meta in saved_chats[:SAVED_CHAT_LIMIT]]
 
         # send to server.js endpoint
-        out = {
+        return {
             "answer": answer,
             "knowledge_docs": simplified_docs,
             "saved_chats": saved_titles,
@@ -136,9 +121,8 @@ def handle_query(query):
             "remaining_chats": remaining_chats
         }
 
-        return out
-
     except Exception as e:
+        log(f"[ERROR] {e}")
         return {"error": str(e)}
 
 # CLI testing
@@ -149,8 +133,9 @@ if __name__ == "__main__":
         query = _read_query_from_stdin()
 
     if not query:
-        log(json.dumps({"error": "No query provided"}, ensure_ascii=False))
+        log("No query provided")
+        print(json.dumps({"error": "No query provided"}, ensure_ascii=False))
         sys.exit(1)
 
     result = handle_query(query)
-    print(json.dumps(result, ensure_ascii=False))
+    print(json.dumps(result, ensure_ascii=False))  # ONLY JSON to stdout

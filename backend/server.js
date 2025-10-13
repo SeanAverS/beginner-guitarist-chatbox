@@ -8,10 +8,14 @@ import { getSavedChatList } from "./utils/getSavedChatList.js";
 import { devMessage, userMessage, successResponse } from "./utils/responses.js";
 import slugify from "slugify";
 import { spawn } from "child_process";
+import { fileURLToPath } from "url";
 
 // This file: 
 // communicates between the frontend and Google's AI API
 // saves the history of a current chat
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
@@ -184,11 +188,14 @@ app.post("/rag", async (req, res) => {
     return res.status(400).json({ error: "No query provided" });
   }
 
-    const PYTHON_EXECUTABLE = "/home/sean/github_repos/beginner-guitarist-chatbox/venv/bin/python";
+const PYTHON_EXECUTABLE = path.join(process.cwd(), "venv/bin/python");
+const RAG_SCRIPT = path.resolve(__dirname, "rag_service.py");
 
   // format query with rag_service.py
   try {
-    const python = spawn(PYTHON_EXECUTABLE, ["rag_service.py"]);
+    const python = spawn(PYTHON_EXECUTABLE, [RAG_SCRIPT], {
+      stdio: ["pipe", "pipe", "pipe"]
+    });
 
     let ragOutput = "";
     let errorString = "";
@@ -209,15 +216,17 @@ app.post("/rag", async (req, res) => {
 
     // format JSON from rag_service.py for frontend display
     python.on("close", (code) => {
-    try {
+      if (errorString) console.error("Python RAG error:", errorString);
+
+      try {
         const response = JSON.parse(ragOutput);
         res.json(response); // for frontend display
-    } catch (err) {
+      } catch (err) {
         console.error("Error parsing Python response:", err);
         console.error("Full Python output:", ragOutput);
         res.status(500).json({ error: "Failed to parse Python response" });
-    }
-});
+      }
+    });
 
     
 
