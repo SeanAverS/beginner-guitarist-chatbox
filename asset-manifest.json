@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/beginner-guitarist-chatbox/static/css/main.b709930b.css",
+    "main.js": "/beginner-guitarist-chatbox/static/js/main.2506afd6.js",
+    "index.html": "/beginner-guitarist-chatbox/index.html",
+    "main.b709930b.css.map": "/beginner-guitarist-chatbox/static/css/main.b709930b.css.map",
+    "main.2506afd6.js.map": "/beginner-guitarist-chatbox/static/js/main.2506afd6.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b709930b.css",
+    "static/js/main.2506afd6.js"
+  ]
+}
