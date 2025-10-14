@@ -183,13 +183,14 @@ app.delete('/api/delete_chat/:filename', async (req, res) => {
 // RAG: format query for frontend 
 app.post("/rag", async (req, res) => {
   const userQuery = req.body.query;
+  const chatFilename = req.body.chat_filename; 
 
   if (!userQuery) {
     return res.status(400).json({ error: "No query provided" });
   }
 
-const PYTHON_EXECUTABLE = path.join(process.cwd(), "venv/bin/python");
-const RAG_SCRIPT = path.resolve(__dirname, "rag_service.py");
+  const PYTHON_EXECUTABLE = path.join(process.cwd(), "venv/bin/python");
+  const RAG_SCRIPT = path.resolve(__dirname, "rag_service.py");
 
   // format query with rag_service.py
   try {
@@ -200,8 +201,8 @@ const RAG_SCRIPT = path.resolve(__dirname, "rag_service.py");
     let ragOutput = "";
     let errorString = "";
 
-    // send query to rag_service.py
-    python.stdin.write(JSON.stringify({ query: userQuery }));
+    // send query and chat_filename to rag_service.py
+    python.stdin.write(JSON.stringify({ query: userQuery, chat_filename: chatFilename }));
     python.stdin.end();
 
     // response from rag_service.py (JSON)

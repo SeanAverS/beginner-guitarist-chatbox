@@ -37,6 +37,18 @@ def get_saved_chat_summary():
     remaining = max(SAVED_CHAT_LIMIT - total_chats, 0)
     return saved_chats[:SAVED_CHAT_LIMIT], total_chats, remaining
 
+# load saved chat for specific session
+def get_saved_chat_for_session(chat_filename=None):
+    if not chat_filename:
+        return []
+    folder = "saved_chats"
+    path = os.path.join(folder, chat_filename)
+    if not os.path.exists(path):
+        return []
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return [(msg["text"], {"source": chat_filename}) for msg in data.get("messages", [])]
+
 # construct answer to user query with FAISS and Gemini
 def rag_answer(user_query):
     knowledge_docs = search_faiss(user_query, k=3)
@@ -95,7 +107,7 @@ def _read_query_from_stdin():
         log(f"[ERROR] Failed to read query: {e}")
         return None
 
-def handle_query(query):
+def handle_query(query, chat_filename=None):
     """Handles a query from the chatbox (frontend) or CLI."""
     try:
         answer, knowledge_docs, total_chats, remaining_chats = rag_answer(query)
@@ -107,12 +119,10 @@ def handle_query(query):
             first_line = text.split("\n", 1)[0].strip()
             simplified_docs.append({"title": first_line, "source": d.get("source")})
 
-        # concise format of saved_chats folder
-        saved_chats = load_saved_chats()
+        saved_chats_list = get_saved_chat_for_session(chat_filename)
         saved_titles = [{"title": meta["source"], "source": meta["source"]}
-                        for _, meta in saved_chats[:SAVED_CHAT_LIMIT]]
+                        for _, meta in saved_chats_list[:SAVED_CHAT_LIMIT]]
 
-        # send to server.js endpoint
         return {
             "answer": answer,
             "knowledge_docs": simplified_docs,

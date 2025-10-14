@@ -15,13 +15,6 @@ export function useCurrentChat() {
   const [chatId, setChatId] = useState(null);
   const [chatFilename, setChatFilename] = useState(null);
 
-  const getFirstMessage = (messages) => {
-    const userMsg = messages.find((msg) => msg.sender === "user");
-    return userMsg ? userMsg.text.trim() : null;
-  };
-
-
-  // id current chat
   useEffect(() => {
     if (!chatId) {
       setChatId(Date.now().toString()); 
@@ -29,13 +22,10 @@ export function useCurrentChat() {
   }, [chatId]);
 
   // save latest chat state in server
-   const handleSaveChat = useCallback(async (latestMessages) => {
+  const handleSaveChat = useCallback(async (latestMessages) => {
     const messagesObject = { messages: latestMessages, chatId, chatFilename };
-
-      const firstMessage = getFirstMessage(latestMessages);
-      if (firstMessage) {
-        messagesObject.firstMessage = firstMessage;
-      }
+    const firstMessage = latestMessages.find((msg) => msg.sender === "user")?.text;
+    if (firstMessage) messagesObject.firstMessage = firstMessage;
 
     try {
       const response = await axios.post(`${API_BASE_URL}/api/save_chat`, messagesObject);
@@ -50,22 +40,21 @@ export function useCurrentChat() {
       handleApiError(error, "Failed to save chat:", setMessages);
     }
   }, [chatId, chatFilename]);
-  
+
   // fetch latest user, ai message and store current chat state
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (userInput.trim() === "") return;
 
     const userMessage = { text: userInput, sender: "user" };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
     // RAG implementation
     try {
-      // call RAG endpoint
-      const ragResult = await askRAG(userMessage.text);
-
+      // call RAG endpoint for current chat 
+      const ragResult = await askRAG(userMessage.text, chatFilename);
       // RAG answer constructed form rag_service.py
       const aiMessage = {
         text: ragResult?.answer || "Sorry, no answer was generated.",
@@ -85,11 +74,11 @@ export function useCurrentChat() {
   };
 
 // start a new chat
-const handleNewChat = () => {
-  setMessages([]);
-  setInput("");
-  setChatFilename(null); 
-};
+  const handleNewChat = () => {
+    setMessages([]);
+    setInput("");
+    setChatFilename(null);
+  };
 
   return {
     messages,
@@ -99,7 +88,7 @@ const handleNewChat = () => {
     setInput,
     setMessages,
     chatFilename,
-    setChatFilename, 
+    setChatFilename,
     handleNewChat,
   };
 }
