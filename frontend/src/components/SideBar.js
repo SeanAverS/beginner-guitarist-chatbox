@@ -95,7 +95,6 @@ function Sidebar({
                     title="Rename Chat"
                     onClick={(e) => {
                       e.stopPropagation();
-                      confirmDelete(chat);
                       startRename(chat.filename, chat.chatTitle);
                     }}
                   >
