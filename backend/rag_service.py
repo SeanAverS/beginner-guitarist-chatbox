@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import time
-import faiss
+import faiss_cpu as faiss
 from dotenv import load_dotenv
 import google.generativeai as genai
 from ingest import load_saved_chats, load_text_files

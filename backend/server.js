@@ -19,18 +19,16 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-    origin: [
-      "https://seanavers.github.io", 
-      "https://seanavers.github.io/beginner-guitarist-chatbox",
-      "http://localhost:3000" // keep this for local testing
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); 
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
