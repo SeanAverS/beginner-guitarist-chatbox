@@ -201,7 +201,9 @@ app.post("/rag", async (req, res) => {
     return res.status(400).json({ error: "No query provided" });
   }
 
-  const PYTHON_EXECUTABLE = path.join(process.cwd(), "venv/bin/python");
+  const PYTHON_EXECUTABLE =
+  process.env.PYTHON_PATH ||
+  (process.env.RENDER ? "/usr/bin/python3" : path.join(process.cwd(), "venv/bin/python"));
   const RAG_SCRIPT = path.resolve(__dirname, "rag_service.py");
 
   // format query with rag_service.py
@@ -209,6 +211,11 @@ app.post("/rag", async (req, res) => {
     const python = spawn(PYTHON_EXECUTABLE, [RAG_SCRIPT], {
       stdio: ["pipe", "pipe", "pipe"]
     });
+
+    if (!fs.access(PYTHON_EXECUTABLE)) {
+      console.error("⚠️ Python executable not found:", PYTHON_EXECUTABLE);
+    }
+
 
     let ragOutput = "";
     let errorString = "";
