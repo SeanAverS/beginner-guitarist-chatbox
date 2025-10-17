@@ -1,0 +1,14 @@
+# Google Generative AI
+google-generativeai
+
+# FAISS for vector search
+faiss-cpu
+
+# Embeddings
+sentence-transformers
+torch>=2.0
+transformers>=4.0
+numpy>=1.24
+
+# Environment variables
+python-dotenv

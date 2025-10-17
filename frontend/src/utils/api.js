@@ -8,7 +8,7 @@ export async function askRAG(query, chatFilename = null) {
        headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ query, chatFilename })
+      body: JSON.stringify({ query, chat_filename: chatFilename  })
     });
 
   if (!response.ok) {

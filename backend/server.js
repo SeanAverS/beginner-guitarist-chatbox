@@ -194,28 +194,24 @@ app.delete('/api/delete_chat/:filename', async (req, res) => {
 
 // RAG: format query for frontend 
 app.post("/rag", async (req, res) => {
-  const userQuery = req.body.query;
-  const chatFilename = req.body.chat_filename; 
-
-  if (!userQuery) {
-    return res.status(400).json({ error: "No query provided" });
-  }
-
-  const PYTHON_EXECUTABLE =
-  process.env.PYTHON_PATH ||
-  (process.env.RENDER ? "/usr/bin/python3" : path.join(process.cwd(), "venv/bin/python"));
-  const RAG_SCRIPT = path.resolve(__dirname, "rag_service.py");
-
-  // format query with rag_service.py
   try {
+
+    const userQuery = req.body.query;
+    const chatFilename = req.body.chat_filename;
+
+    if (!userQuery) {
+      return res.status(400).json({ error: "No query provided" });
+    }
+
+// Use system Python on Render, otherwise use local venv
+    const PYTHON_EXECUTABLE = process.env.RENDER
+      ? "/usr/bin/python3" // system Python on Render
+      : path.join(process.cwd(), "venv/bin/python"); // local venv
+    const RAG_SCRIPT = path.resolve(__dirname, "rag_service.py");
+
     const python = spawn(PYTHON_EXECUTABLE, [RAG_SCRIPT], {
       stdio: ["pipe", "pipe", "pipe"]
     });
-
-    if (!fs.access(PYTHON_EXECUTABLE)) {
-      console.error("⚠️ Python executable not found:", PYTHON_EXECUTABLE);
-    }
-
 
     let ragOutput = "";
     let errorString = "";
@@ -226,11 +222,13 @@ app.post("/rag", async (req, res) => {
 
     // response from rag_service.py (JSON)
     python.stdout.on("data", (data) => {
+      console.log("🐍 Python output:", data.toString());
       ragOutput += data.toString();
     });
 
     // errors from rag_service.py (JSON)
     python.stderr.on("data", (data) => {
+      console.log("⚠️ Python error:", data.toString());
       errorString += data.toString();
     });
 
