@@ -207,9 +207,10 @@ app.post("/rag", async (req, res) => {
       : path.join(process.cwd(), "venv/bin/python"); // local venv
     const RAG_SCRIPT = path.resolve(__dirname, "rag_service.py");
 
-    const python = spawn(PYTHON_EXECUTABLE, [RAG_SCRIPT], {
+    const python = spawn(PYTHON_EXECUTABLE, ["-u", RAG_SCRIPT], {
       stdio: ["pipe", "pipe", "pipe"]
     });
+
 
     let ragOutput = "";
     let errorString = "";

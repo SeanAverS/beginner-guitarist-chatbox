@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import time
-import faiss_cpu as faiss
+import faiss
 from dotenv import load_dotenv
 import google.generativeai as genai
 from ingest import load_saved_chats, load_text_files
@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
     if not query:
         log("No query provided")
-        print(json.dumps({"error": "No query provided"}, ensure_ascii=False))
+        print(json.dumps({"error": "No query provided"}, ensure_ascii=False),  flush=True)
         sys.exit(1)
 
     result = handle_query(query)
