@@ -2,7 +2,7 @@
 google-generativeai
 
 # FAISS for vector search
-faiss-cpu==1.7.4
+faiss-cpu==1.9.0.post1
 
 # Embeddings
 sentence-transformers
