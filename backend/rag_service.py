@@ -86,9 +86,12 @@ def rag_answer(user_query):
 
     start = time.time()
     # Construct answer using Gemini and prompt (FAISS index)
-    response = model.generate_content(prompt)
-    elapsed = (time.time() - start)
-    log(f"[Gemini] Response took {elapsed:.2f} sec")
+    try:
+        response = model.generate_content(prompt)
+        answer_text = response.text.replace("\n", " ").strip()
+    except Exception as e:
+        log(f"[ERROR] Gemini response failed: {e}")
+        answer_text = "Sorry, I could not generate a response."
 
     return response.text, knowledge_docs, total_chats, remaining_chats
 
@@ -148,4 +151,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     result = handle_query(query)
-    print(json.dumps(result, ensure_ascii=False))  # ONLY JSON to stdout
+    print(json.dumps(result, ensure_ascii=False).replace("\n", "\\n"), flush=True)
