@@ -7,8 +7,9 @@ from embedder import get_embedder
 
 # This formats saved_chats and data folder content and organizes into a FAISS index
 
-INDEX_FILE = "chat_index.faiss"
-META_FILE = "chat_meta.json"
+BASE_DIR = os.path.dirname(__file__)
+INDEX_FILE = os.path.join(BASE_DIR, "chat_index.faiss")
+META_FILE = os.path.join(BASE_DIR, "chat_meta.json")
 
 # get AI messages from saved chats folder
 def load_saved_chats(folder="saved_chats"):

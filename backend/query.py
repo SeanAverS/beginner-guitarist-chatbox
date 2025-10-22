@@ -2,11 +2,14 @@ import json
 import faiss
 import sys
 from embedder import get_embedder
+import os
 
 # This compares the embeddings from the FAISS index with an embedded user query
 
-INDEX_FILE = "chat_index.faiss"
-META_FILE = "chat_meta.json"
+BASE_DIR = os.path.dirname(__file__)
+INDEX_FILE = os.path.join(BASE_DIR, "chat_index.faiss")
+META_FILE = os.path.join(BASE_DIR, "chat_meta.json")
+
 
 class Retriever:
     _index = None
