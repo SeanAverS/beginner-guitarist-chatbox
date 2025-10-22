@@ -190,6 +190,38 @@ app.delete('/api/delete_chat/:filename', async (req, res) => {
     }
 });
 
+app.post("/debug-rag", async (req, res) => {
+  try {
+    const query = req.body.query || "Hello, how are you?";
+    const python = spawn("python3", ["rag_service.py"]);
+
+    let output = "";
+    let errorOutput = "";
+
+    python.stdout.on("data", (data) => {
+      output += data.toString();
+    });
+
+    python.stderr.on("data", (data) => {
+      errorOutput += data.toString();
+    });
+
+    python.on("close", (code) => {
+      res.json({
+        code,
+        stdout: output,
+        stderr: errorOutput,
+      });
+    });
+
+    // send JSON input to Python
+    python.stdin.write(JSON.stringify({ query }));
+    python.stdin.end();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // RAG: format query for frontend 
 app.post("/rag", async (req, res) => {
   try {
