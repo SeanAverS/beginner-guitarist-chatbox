@@ -35,5 +35,3 @@ __pycache__/
 
 # FAISS index and embeddings
 *.bin
-
-chat_meta.json
