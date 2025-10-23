@@ -7,7 +7,7 @@ import path from 'path';
 import { getSavedChatList } from "./utils/getSavedChatList.js";
 import { devMessage, userMessage, successResponse } from "./utils/responses.js";
 import slugify from "slugify";
-import { spawn } from "child_process";
+import { spawn, execFile } from "child_process";
 import { fileURLToPath } from "url";
 
 // This file: 
@@ -294,16 +294,14 @@ app.get("/ping", (req, res) => {
 
 // Python test route
 app.get("/python-test", (req, res) => {
-  exec("python3 -c 'print(\"Python works!\")'", (error, stdout, stderr) => {
-    if (error) {
-      return res.status(500).send(`Error: ${error.message}`);
-    }
-    if (stderr) {
-      return res.status(500).send(`Stderr: ${stderr}`);
-    }
+  const PYTHON_EXECUTABLE = process.env.RENDER ? "/usr/bin/python3" : "venv/bin/python3";
+  exec(`${PYTHON_EXECUTABLE} -c 'print("Python works!")'`, (error, stdout, stderr) => {
+    if (error) return res.status(500).send(`Error: ${error.message}`);
+    if (stderr) return res.status(500).send(`Stderr: ${stderr}`);
     res.send(stdout);
   });
 });
+
 
 
 const PORT = process.env.PORT || 3001;
