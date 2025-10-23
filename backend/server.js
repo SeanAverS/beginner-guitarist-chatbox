@@ -285,9 +285,26 @@ app.post("/rag", async (req, res) => {
   }
 });
 
+import { exec } from "child_process";
+
+// Simple ping route
 app.get("/ping", (req, res) => {
   res.send("pong");
 });
+
+// Python test route
+app.get("/python-test", (req, res) => {
+  exec("python3 -c 'print(\"Python works!\")'", (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).send(`Error: ${error.message}`);
+    }
+    if (stderr) {
+      return res.status(500).send(`Stderr: ${stderr}`);
+    }
+    res.send(stdout);
+  });
+});
+
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
