@@ -25,12 +25,24 @@ const allowedOrigins = [
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: allowedOrigins,
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-  credentials: true, 
-  optionsSuccessStatus: 204 
-}));
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'https://seanavers.github.io',
+      'http://localhost:3000'
+    ];
 
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = `The CORS policy for this site does not allow access from the specified Origin.`;
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+    
+  },
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+  credentials: true,
+  optionsSuccessStatus: 204
+}));
 
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
