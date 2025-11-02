@@ -45,12 +45,12 @@ app.use(cors({
 }));
 
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
-
 // handle chat requests and provide ai response 
 app.post("/api/ask", async (req, res) => {
   try {
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+
     const userMessage = req.body.prompt; 
 
     const prompt = `You are an AI specializing in guitar advice for beginners. Provide a detailed but concise answer to the following question. Answer the user's question directly: ${userMessage}`;
@@ -111,6 +111,9 @@ app.post('/api/save_chat', async (req, res) => {
 
         // ai generated title 
         try {
+            const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+
             const prompt = `Generate a very concise, three-word filename (lowercase, hyphenated) for the following query. Do not include a file extension. Example: "john-mayer-vs-srv".
             
             Query: ${firstMessage}`;
