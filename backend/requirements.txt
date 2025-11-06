@@ -10,3 +10,5 @@ sentence-transformers==5.1.1
 torch>=2.0
 transformers>=4.0
 python-dotenv==1.1.1
+fastapi
+uvicorn[standard]
