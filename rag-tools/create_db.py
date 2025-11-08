@@ -8,7 +8,7 @@ chroma_client = chromadb.Client()
 # Step 2: Set up the embedding model
 # We will use a model from the sentence-transformers library
 ef = embedding_functions.SentenceTransformerEmbeddingFunction(
-    model_name="all-MiniLM-L6-v2"
+    model_name="paraphrase-MiniLM-L3-v2"
 )
 
 # Step 3: Get or create a collection
