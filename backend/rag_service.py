@@ -146,6 +146,23 @@ def handle_query(query, chat_filename=None):
         log(f"[ERROR] {e}")
         return {"error": str(e)}
 
+# FastAPI wrapper 
+from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/query")
+def query_endpoint(q: str = Query(..., description="User's question")):
+    return handle_query(q)
+
 # CLI testing
 if __name__ == "__main__":
     if len(sys.argv) > 1:
