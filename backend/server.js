@@ -90,63 +90,62 @@ app.get('/api/load_chat/:filename', async (req, res) => {
 });
 
 
-// save chat history
+// save chat history 
 app.post('/api/save_chat', async (req, res) => {
-  const { messages, chatId, firstMessage, chatFilename } = req.body;
-
-    const getSavedFileName = async () => {
-        if (chatFilename) {
-            return chatFilename;
-        }
-
-        // empty chat
-        if (!firstMessage) {
-            return `chat_history_${chatId}.json`;
-        }
-
-        // ai generated title 
-        try {
-            const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
-
-            const prompt = `Generate a very concise, three-word filename (lowercase, hyphenated) for the following query. Do not include a file extension. Example: "john-mayer-vs-srv".
-            
-            Query: ${firstMessage}`;
-
-            const titleResult = await model.generateContent(prompt);
-            const chatTitle = titleResult.response.text().trim();
-            return `${chatTitle}-${chatId}.json`;
-        } catch (error) {
-            devMessage("Error generating title with AI:", error);
-            return `chat_history_${chatId}.json`;
-        }
-    };
-    
-    const savedFileName = await getSavedFileName(); 
-
-  // save file in saved chats folder
-  const savedChatsFolder = 'saved_chats';
-  const savedChatsFilePath = path.join(savedChatsFolder, savedFileName);
-
   try {
-    // check folder existence 
+    const { messages, chatId, firstMessage, chatFilename } = req.body;
+
+    // ensure saved_chats folder exists
+    const savedChatsFolder = 'saved_chats';
     await fs.mkdir(savedChatsFolder, { recursive: true });
 
-    // generate file name
+    // determine filename
+    let savedFileName;
+    if (chatFilename) {
+      savedFileName = chatFilename;
+    } else if (!firstMessage) {
+      savedFileName = `chat_history_${chatId}.json`;
+    } else {
+      // generate AI-based filename
+      try {
+        const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+
+        const prompt = `Generate a very concise, three-word filename (lowercase, hyphenated) for the following query. Do not include a file extension. Example: "john-mayer-vs-srv".
+
+Query: ${firstMessage}`;
+
+        const titleResult = await model.generateContent(prompt);
+        const chatTitle = titleResult.response.text().trim();
+        savedFileName = `${chatTitle}-${chatId}.json`;
+      } catch (err) {
+        console.error("Error generating AI filename, falling back:", err);
+        savedFileName = `chat_history_${chatId}.json`;
+      }
+    }
+
+    // save file
+    const savedChatsFilePath = path.join(savedChatsFolder, savedFileName);
     const chatData = {
       meta: { title: firstMessage || "New Chat" },
       messages
     };
 
-    await fs.writeFile(savedChatsFilePath, JSON.stringify(chatData, null, 2), "utf-8");
-
+    await fs.writeFile(savedChatsFilePath, JSON.stringify(chatData, null, 2), 'utf-8');
     console.log(`Chat history saved to ${savedChatsFilePath}`);
-    return successResponse(res, { message: 'Chat history saved successfully!', chatFilename: savedFileName});
-  } catch (error) {
-    devMessage("Error saving chat history:", error);
-    return userMessage(res, 500, 'Failed to save chat history.');
+
+    // always send Access-Control-Allow-Origin header
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.json({ message: 'Chat history saved successfully!', chatFilename: savedFileName });
+
+  } catch (err) {
+    console.error("Error in /api/save_chat:", err);
+    // ensure CORS header even on error
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.status(500).json({ error: 'Failed to save chat history', details: err.message });
   }
 });
+
 
 // Rename a saved chat
 app.post('/api/rename_chat', async (req, res) => {
