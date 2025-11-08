@@ -19,11 +19,19 @@ SAVED_CHAT_LIMIT = 100
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-# Load FAISS 
-retriever = Retriever()
+# lazy load FAISS
+_retriever = None
+def get_retriever():
+    global _retriever
+    if _retriever is None:
+        log("[Retriever] Loading FAISS index...")
+        from query import Retriever  # import here to avoid early load
+        _retriever = Retriever()
+    return _retriever
 
 # search FAISS for similar content to user query
 def search_faiss(user_query, k=3):
+    retriever = get_retriever() # lazy-loaded retriever
     start = time.time()
     results = retriever.query(user_query, k)
     elapsed = (time.time() - start) * 1000  # milliseconds
