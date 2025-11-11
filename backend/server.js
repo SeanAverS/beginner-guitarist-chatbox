@@ -247,7 +247,7 @@ app.post("/rag", async (req, res) => {
 // Use system Python on Render, otherwise use local venv
     const PYTHON_EXECUTABLE = process.env.RENDER
       ? "/usr/bin/python3" // system Python on Render
-      : path.join(process.cwd(), "venv/bin/python"); // local venv
+      : path.join(process.cwd(), "venv/bin/python3"); // local venv
     const RAG_SCRIPT = path.resolve(__dirname, "rag_service.py");
 
     const python = spawn(PYTHON_EXECUTABLE, ["-u", RAG_SCRIPT], {
