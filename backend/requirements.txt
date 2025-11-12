@@ -1,9 +1,14 @@
+# Lightweight essentials first
+python-dotenv==1.1.1
+fastapi
+uvicorn[standard]
 numpy>=1.24
+
+# Heavy ML packages
 torch>=2.0
 transformers>=4.0
 sentence-transformers==5.1.1
 faiss-cpu==1.12.0
+
+# Google Generative AI
 google-generativeai
-python-dotenv==1.1.1
-fastapi
-uvicorn[standard]
