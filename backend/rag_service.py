@@ -17,12 +17,12 @@ SAVED_CHAT_LIMIT = 100
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # lazy load dotenv 
-    def load_env():
-        try:
-            from dotenv import load_dotenv
-            load_dotenv()
-        except ModuleNotFoundError:
-            print("[WARN] python-dotenv not found, skipping load_dotenv")      
+def load_env():
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+    except ModuleNotFoundError:
+        print("[WARN] python-dotenv not found, skipping load_dotenv")      
 
 load_env()
 
