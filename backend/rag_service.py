@@ -2,7 +2,6 @@ import os
 import sys
 import json
 import time
-import faiss
 from dotenv import load_dotenv
 import google.generativeai as genai
 from ingest import load_saved_chats, load_text_files
@@ -25,6 +24,7 @@ def get_retriever():
     global _retriever
     if _retriever is None:
         log("[Retriever] Loading FAISS index...")
+        import faiss
         from query import Retriever  # import here to avoid early load
         _retriever = Retriever()
     return _retriever
