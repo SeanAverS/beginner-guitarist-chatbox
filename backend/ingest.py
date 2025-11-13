@@ -2,7 +2,6 @@ import os
 import sys
 import json
 import glob
-import faiss
 from embedder import get_embedder
 
 # This formats saved_chats and data folder content and organizes into a FAISS index
@@ -10,6 +9,14 @@ from embedder import get_embedder
 BASE_DIR = os.path.dirname(__file__)
 INDEX_FILE = os.path.join(BASE_DIR, "chat_index.faiss")
 META_FILE = os.path.join(BASE_DIR, "chat_meta.json")
+
+def get_faiss():
+    try:
+        import faiss
+        return faiss
+    except ModuleNotFoundError:
+        print("[ERROR] FAISS not found — make sure it's in requirements.txt", file=sys.stderr)
+        raise
 
 # get AI messages from saved chats folder
 def load_saved_chats(folder="saved_chats"):
@@ -67,6 +74,7 @@ def build_index():
 
     # organize embeddings for FAISS 
     dim = embeddings.shape[1]
+    faiss = get_faiss()
     index = faiss.IndexFlatL2(dim)
     index.add(embeddings)
 
