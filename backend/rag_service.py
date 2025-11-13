@@ -2,7 +2,6 @@ import os
 import sys
 import json
 import time
-import google.generativeai as genai
 from ingest import load_saved_chats, load_text_files
 from query import Retriever
 
@@ -13,8 +12,6 @@ def log(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
     
 SAVED_CHAT_LIMIT = 100
-
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # lazy load dotenv 
 def load_env():
@@ -36,6 +33,17 @@ def get_retriever():
         from query import Retriever  # import here to avoid early load
         _retriever = Retriever()
     return _retriever
+
+# lazy load Google Generative AI
+def get_gemini():
+    try:
+        import google.generativeai as genai
+        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+        return genai.GenerativeModel("gemini-2.5-flash-lite")
+    except ModuleNotFoundError:
+        print("[ERROR] google-generativeai not found — check requirements.txt", file=sys.stderr)
+        raise
+
 
 # search FAISS for similar content to user query
 def search_faiss(user_query, k=3):
@@ -89,7 +97,7 @@ def rag_answer(user_query):
     log(f"Saved chats: {len(saved_chats)}, Knowledge docs: {len(knowledge_docs)}")
 
     # Build context using Gemini 
-    model = genai.GenerativeModel("gemini-2.5-flash-lite")
+    model = get_gemini()
 
     # Prepare prompt with FAISS index  
     prompt = (
