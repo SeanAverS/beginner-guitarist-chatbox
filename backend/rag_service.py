@@ -19,7 +19,7 @@ def load_env():
         from dotenv import load_dotenv
         load_dotenv()
     except ModuleNotFoundError:
-        print("[WARN] python-dotenv not found, skipping load_dotenv")      
+        print("[WARN] python-dotenv not found, skipping load_dotenv", file=sys.stderr)      
 
 load_env()
 
