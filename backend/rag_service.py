@@ -191,5 +191,10 @@ if __name__ == "__main__":
         print(json.dumps({"error": "No query provided"}, ensure_ascii=False),  flush=True)
         sys.exit(1)
 
-    result = handle_query(query)
-    print(json.dumps(result, ensure_ascii=False).replace("\n", "\\n"), flush=True)
+    try:
+        result = handle_query(query)
+    except Exception as e:
+        log(f"[ERROR] {e}")
+        result = {"error": str(e)}
+
+    print(json.dumps(result, ensure_ascii=False), flush=True)
