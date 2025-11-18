@@ -26,9 +26,7 @@ Thumbs.db
 .env
 
 # Python virtual environment
-/backend/venv/      # <-- **THIS IS THE CRITICAL LINE**
-/rag-tools/venv/
-venv/
+/backend/venv/      
 
 saved_chats/
 
