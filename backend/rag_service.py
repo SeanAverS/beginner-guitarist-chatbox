@@ -5,7 +5,7 @@ import time
 from ingest import load_saved_chats, load_text_files
 from query import Retriever
 
-# This will answer the user query using FAISS index and Gemini as context 
+# This will answer the user query using HNSWLIB index and Gemini as context 
 
 # log output to stderr
 def log(*args, **kwargs):
@@ -23,13 +23,12 @@ def load_env():
 
 load_env()
 
-# lazy load FAISS
+# lazy load HNSWLIB
 _retriever = None
 def get_retriever():
     global _retriever
     if _retriever is None:
-        log("[Retriever] Loading FAISS index...")
-        import faiss
+        log("[Retriever] Loading HNSWLIB index...")
         from query import Retriever  # import here to avoid early load
         _retriever = Retriever()
     return _retriever
@@ -45,13 +44,13 @@ def get_gemini():
         raise
 
 
-# search FAISS for similar content to user query
-def search_faiss(user_query, k=3):
+# search HNSWLIB for similar content to user query
+def search_hnswlib(user_query, k=3):
     retriever = get_retriever() # lazy-loaded retriever
     start = time.time()
     results = retriever.query(user_query, k)
     elapsed = (time.time() - start) * 1000  # milliseconds
-    log(f"[FAISS] Retrieval took {elapsed:.2f} ms")
+    log(f"[HNSWLIB] Retrieval took {elapsed:.2f} ms")
     return results
 
 # count saved and remaining chats
@@ -73,13 +72,13 @@ def get_saved_chat_for_session(chat_filename=None):
         data = json.load(f)
     return [(msg["text"], {"source": chat_filename}) for msg in data.get("messages", [])]
 
-# construct answer to user query with FAISS and Gemini
+# construct answer to user query with HNSWLIB and Gemini
 def rag_answer(user_query):
-    knowledge_docs = search_faiss(user_query, k=3)
+    knowledge_docs = search_hnswlib(user_query, k=3)
 
     saved_chats, total_chats, remaining_chats = get_saved_chat_summary()
 
-    # Build context using FAISS 
+    # Build context using HNSWLIB 
     context_sections = []
     if saved_chats:
         context_sections.append(f"### Saved Conversations ({len(saved_chats)} of {total_chats}):")
@@ -93,13 +92,13 @@ def rag_answer(user_query):
 
     context = "\n\n".join(context_sections)
 
-    log("\n--- Retrieved Context for Gemini from FAISS ---")
+    log("\n--- Retrieved Context for Gemini from HNSWLIB ---")
     log(f"Saved chats: {len(saved_chats)}, Knowledge docs: {len(knowledge_docs)}")
 
     # Build context using Gemini 
     model = get_gemini()
 
-    # Prepare prompt with FAISS index  
+    # Prepare prompt with HNSWLIB index  
     prompt = (
         "You are a beginner guitar assistant. Only use guitar-related information. Do not answer unrelated questions."
         "The answer should be short but not too short. Be friendly and patient always!\n\n"
@@ -109,7 +108,7 @@ def rag_answer(user_query):
     )
 
     start = time.time()
-    # Construct answer using Gemini and prompt (FAISS index)
+    # Construct answer using Gemini and prompt (HNSWLIB index)
     try:
         response = model.generate_content(prompt)
         answer_text = response.text.replace("\n", " ").strip()
@@ -139,7 +138,7 @@ def handle_query(query, chat_filename=None):
     try:
         answer, knowledge_docs, total_chats, remaining_chats = rag_answer(query)
 
-        # concise format of FAISS index
+        # concise format of HNSWLIB index
         simplified_docs = []
         for d in knowledge_docs:
             text = d.get("text", "")
