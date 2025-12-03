@@ -3,19 +3,20 @@ import sys
 import json
 import glob
 from embedder import get_embedder
+import numpy as np
 
-# This formats saved_chats and data folder content and organizes into a FAISS index
+# This formats saved_chats and data folder content and organizes into a HNSWLIB index
 
 BASE_DIR = os.path.dirname(__file__)
-INDEX_FILE = os.path.join(BASE_DIR, "chat_index.faiss")
+INDEX_FILE = os.path.join(BASE_DIR, "chat_index.bin")
 META_FILE = os.path.join(BASE_DIR, "chat_meta.json")
 
-def get_faiss():
+def get_hnswlib(): 
     try:
-        import faiss
-        return faiss
+        import hnswlib
+        return hnswlib
     except ModuleNotFoundError:
-        print("[ERROR] FAISS not found — make sure it's in requirements.txt", file=sys.stderr)
+        print("[ERROR] hnswlib not found — make sure it's in requirements.txt", file=sys.stderr)
         raise
 
 # get AI messages from saved chats folder
@@ -56,7 +57,7 @@ def load_text_files(folder="data"):
                     docs.append((combined, {"source": os.path.basename(file)}))
     return docs
 
-# prepare folder data for FAISS 
+# prepare folder data for HNSWLIB 
 def build_index():
     embedder = get_embedder()
 
@@ -72,13 +73,20 @@ def build_index():
     texts, metas = zip(*docs) # text, filename
     embeddings = embedder.encode(list(texts), convert_to_numpy=True)
 
-    # organize embeddings for FAISS 
+    # organize embeddings for HNSWLIB 
+    hnsw = get_hnswlib() 
     dim = embeddings.shape[1]
-    faiss = get_faiss()
-    index = faiss.IndexFlatL2(dim)
-    index.add(embeddings)
+    num_elements = embeddings.shape[0]
 
-    faiss.write_index(index, INDEX_FILE)
+    # Initialize HNSW index 
+    index = hnsw.Index(space='cosine', dim=dim)
+    index.init_index(max_elements=num_elements, ef_construction=200, M=16)
+    
+    # Add data points
+    index.add_items(embeddings, np.arange(num_elements))
+
+    # Save the index and metadata
+    index.save_index(INDEX_FILE) 
     with open(META_FILE, "w", encoding="utf-8") as f:
         json.dump({"texts": texts, "metas": metas}, f, indent=2)
 
