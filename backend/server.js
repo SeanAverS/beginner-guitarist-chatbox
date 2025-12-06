@@ -87,7 +87,7 @@ app.get('/api/load_chat/:filename', async (req, res) => {
     devMessage(`Failed to load chat: ${filename}`, error);
     return userMessage(res, 404, 'Chat not found.');
   }
-});
+}); 
 
 
 // save chat history 
