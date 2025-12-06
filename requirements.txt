@@ -8,7 +8,7 @@ numpy==1.26.4
 torch==2.9.1
 transformers>=4.0
 sentence-transformers==5.1.1
-hnswlib==0.8.0
+hnswlib
 
 # Google Generative AI
 google-generativeai
