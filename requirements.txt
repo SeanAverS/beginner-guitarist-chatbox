@@ -1,17 +1,14 @@
-# Specify CPU-only PyTorch to avoid build conflicts with the GPU version
---extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.5.0
-
 # Lightweight essentials
-python-dotenv==1.1.1
+python-dotenv
 fastapi
 uvicorn[standard]
 numpy==1.26.4
 
-# Heavy ML packages
-transformers>=4.0
-sentence-transformers==5.1.1
-hnswlib  
+# Heavy ML packages - UNPINNED 
+torch
+transformers
+sentence-transformers
+hnswlib
 
 # Google Generative AI
 google-generativeai
