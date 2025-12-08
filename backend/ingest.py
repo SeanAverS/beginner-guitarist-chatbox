@@ -4,20 +4,13 @@ import json
 import glob
 from embedder import get_embedder
 import numpy as np
+import chromadb 
 
-# This formats saved_chats and data folder content and organizes into a HNSWLIB index
+# This formats saved_chats and data folder content and organizes into a vector index
 
 BASE_DIR = os.path.dirname(__file__)
-INDEX_FILE = os.path.join(BASE_DIR, "chat_index.bin")
-META_FILE = os.path.join(BASE_DIR, "chat_meta.json")
-
-def get_hnswlib(): 
-    try:
-        import hnswlib
-        return hnswlib
-    except ModuleNotFoundError:
-        print("[ERROR] hnswlib not found — make sure it's in requirements.txt", file=sys.stderr)
-        raise
+CHROMA_PATH = os.path.join(BASE_DIR, "chroma_db_data") 
+COLLECTION_NAME = "chat_rag_collection" 
 
 # get AI messages from saved chats folder
 def load_saved_chats(folder="saved_chats"):
@@ -57,7 +50,7 @@ def load_text_files(folder="data"):
                     docs.append((combined, {"source": os.path.basename(file)}))
     return docs
 
-# prepare folder data for HNSWLIB 
+# prepare folder data for vector index 
 def build_index():
     embedder = get_embedder()
 
@@ -71,26 +64,26 @@ def build_index():
     
     # prepare embeddings 
     texts, metas = zip(*docs) # text, filename
-    embeddings = embedder.encode(list(texts), convert_to_numpy=True)
-
-    # organize embeddings for HNSWLIB 
-    hnsw = get_hnswlib() 
-    dim = embeddings.shape[1]
-    num_elements = embeddings.shape[0]
-
-    # Initialize HNSW index 
-    index = hnsw.Index(space='cosine', dim=dim)
-    index.init_index(max_elements=num_elements, ef_construction=200, M=16)
     
-    # Add data points
-    index.add_items(embeddings, np.arange(num_elements))
+    # Generate unique IDs for ChromaDB
+    ids = [f"doc_{i}" for i in range(len(texts))]
 
-    # Save the index and metadata
-    index.save_index(INDEX_FILE) 
-    with open(META_FILE, "w", encoding="utf-8") as f:
-        json.dump({"texts": texts, "metas": metas}, f, indent=2)
+    embeddings = embedder.encode(list(texts), convert_to_numpy=True).tolist() 
+
+    # Initialize Chroma client and collection
+    client = chromadb.PersistentClient(path=CHROMA_PATH)
+    collection = client.get_or_create_collection(name=COLLECTION_NAME)
+    
+    # Add data points to ChromaDB
+    collection.add(
+        ids=ids,
+        embeddings=embeddings,
+        documents=list(texts),
+        metadatas=list(metas)
+    )
 
     print(f"Indexed {len(texts)} items.", file=sys.stderr)
 
 if __name__ == "__main__":
+    # Ensure ingest script creates index before the server tries to load it
     build_index()
