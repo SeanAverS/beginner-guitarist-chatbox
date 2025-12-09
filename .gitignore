@@ -25,6 +25,8 @@ Thumbs.db
 
 .env
 
+backend/chroma_db_data
+
 # Python virtual environment
 /backend/venv/      
 
