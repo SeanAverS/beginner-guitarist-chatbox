@@ -12,11 +12,10 @@ CHROMA_PATH = os.path.join(BASE_DIR, "chroma_db_data")
 COLLECTION_NAME = "chat_rag_collection" 
 
 # lazy load chromadb client 
-def get_chroma_client(): 
+def get_chroma_lib(): 
     try:
         import chromadb 
-        client = chromadb.PersistentClient(path=CHROMA_PATH)
-        return client
+        return chromadb 
     except ModuleNotFoundError:
         print("[ERROR] chromadb not found — check requirements.txt", file=sys.stderr)
         raise
@@ -83,7 +82,8 @@ def build_index():
     embeddings = embedder.encode(list(texts), convert_to_numpy=True).tolist() 
 
     # Initialize Chroma client and collection
-    client = chromadb.PersistentClient(path=CHROMA_PATH)
+    chroma = get_chroma_lib() 
+    client = chroma.PersistentClient(path=CHROMA_PATH) 
     collection = client.get_or_create_collection(name=COLLECTION_NAME)
     
     # Add data points to ChromaDB

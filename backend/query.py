@@ -6,21 +6,23 @@ import os
 # This compares the embeddings from the vector index with an embedded user query
 
 BASE_DIR = os.path.dirname(__file__)
-CHROMA_PATH = os.path.join(BASE_DIR, "chroma_db_data") # <<< NEW PATH
+CHROMA_PATH = os.path.join(BASE_DIR, "chroma_db_data") 
 
 # lazy load chromadb client 
-def get_chroma_client(): 
+def get_chroma_lib(): 
     try:
-        # PersistentClient for file-backed, pure-Python index
-        client = chromadb.PersistentClient(path=CHROMA_PATH)
-        return client
+        import chromadb 
+        return chromadb 
+    except ModuleNotFoundError:
+        print("[ERROR] chromadb not found — check requirements.txt", file=sys.stderr)
+        raise
     except Exception as e:
         print(f"[ERROR] ChromaDB initialization failed: {e}", file=sys.stderr)
         raise
 
 class Retriever:
     _embedder = None
-    _collection = None # 
+    _collection = None 
     _texts = None 
     _metas = None
     
@@ -28,15 +30,16 @@ class Retriever:
     @classmethod
     def init(cls):
         if cls._collection is None:
-            client = get_chroma_client()
+            chroma = get_chroma_lib() 
+            
+            # Use module object to create the client
+            client = chroma.PersistentClient(path=CHROMA_PATH)
+            
             COLLECTION_NAME = "chat_rag_collection" 
             print("[Retriever] Loading Vector Index...", file=sys.stderr)
             
-            # Load existing collection created by ingest script
+            # Load existing collection from ingest.py 
             cls._collection = client.get_collection(name=COLLECTION_NAME) 
-
-            # note: Chroma stores text and metadata internally, 
-            # so the separate loading of META_FILE is no longer necessary.
             
         if cls._embedder is None:
             cls._embedder = get_embedder()
