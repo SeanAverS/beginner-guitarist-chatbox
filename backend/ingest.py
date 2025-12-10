@@ -4,13 +4,25 @@ import json
 import glob
 from embedder import get_embedder
 import numpy as np
-import chromadb 
 
 # This formats saved_chats and data folder content and organizes into a vector index
 
 BASE_DIR = os.path.dirname(__file__)
 CHROMA_PATH = os.path.join(BASE_DIR, "chroma_db_data") 
 COLLECTION_NAME = "chat_rag_collection" 
+
+# lazy load chromadb client 
+def get_chroma_client(): 
+    try:
+        import chromadb 
+        client = chromadb.PersistentClient(path=CHROMA_PATH)
+        return client
+    except ModuleNotFoundError:
+        print("[ERROR] chromadb not found — check requirements.txt", file=sys.stderr)
+        raise
+    except Exception as e:
+        print(f"[ERROR] ChromaDB initialization failed: {e}", file=sys.stderr)
+        raise
 
 # get AI messages from saved chats folder
 def load_saved_chats(folder="saved_chats"):

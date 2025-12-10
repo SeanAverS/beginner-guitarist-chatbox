@@ -2,7 +2,6 @@ import json
 import sys
 from embedder import get_embedder
 import os
-import chromadb 
 
 # This compares the embeddings from the vector index with an embedded user query
 
