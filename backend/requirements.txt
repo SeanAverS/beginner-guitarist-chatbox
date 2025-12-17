@@ -1,14 +1,9 @@
-# Lightweight essentials first
-python-dotenv
+python-dotenv==1.1.1
 fastapi
 uvicorn[standard]
-numpy>=2.0.0
-
-# Modern ML packages for Python 3.13
+numpy==1.26.4
 torch>=2.4.0
 transformers>=4.40.0
 sentence-transformers>=3.0.0
-faiss-cpu>=1.9.0
-
-# Google Generative AI
+faiss-cpu==1.8.0
 google-generativeai
