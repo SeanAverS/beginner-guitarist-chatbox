@@ -8,7 +8,7 @@ numpy==1.26.4
 torch==2.9.1 
 transformers>=4.0
 sentence-transformers==5.1.1
-faiss-cpu==1.13.0 
+faiss-cpu==1.7.4 
 
 # Google Generative AI
 google-generativeai
