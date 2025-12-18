@@ -1,3 +1,24 @@
+try:
+    # find pip install location
+    output = subprocess.check_output([sys.executable, "-m", "pip", "show", "pip"], stderr=subprocess.STDOUT).decode()
+    for line in output.split('\n'):
+        if line.startswith('Location: '):
+            site_packages = line.split('Location: ')[1].strip()
+            if site_packages not in sys.path:
+                sys.path.append(site_packages)
+    
+    # 2. common render hidden paths for Python 3.11
+    extra_paths = [
+        os.path.expanduser("~/.local/lib/python3.11/site-packages"),
+        "/opt/render/project/src/.venv/lib/python3.11/site-packages",
+        os.getcwd()
+    ]
+    for p in extra_paths:
+        if os.path.exists(p) and p not in sys.path:
+            sys.path.append(p)
+except Exception:
+    pass
+
 import os
 import sys
 import json
