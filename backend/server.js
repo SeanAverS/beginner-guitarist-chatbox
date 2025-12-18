@@ -236,7 +236,6 @@ app.post("/debug-rag", async (req, res) => {
 // RAG: format query for frontend 
 app.post("/rag", async (req, res) => {
   try {
-
     const userQuery = req.body.query;
     const chatFilename = req.body.chat_filename;
 
@@ -244,13 +243,23 @@ app.post("/rag", async (req, res) => {
       return res.status(400).json({ error: "No query provided" });
     }
 
-// Use system Python on Render, otherwise use local venv
+    // Make Render point to user installed python 
     const PYTHON_EXECUTABLE = process.env.RENDER
-      ? "/usr/bin/python3" // system Python on Render
-      : path.join(process.cwd(), "venv/bin/python3"); // local venv
+      ? path.join(process.env.HOME, ".local/bin/python3") 
+      : path.join(process.cwd(), "venv/bin/python3"); 
+
     const RAG_SCRIPT = path.resolve(__dirname, "rag_service.py");
 
+    // PYTHONPATH to find site-packages
+    const pythonPathEnv = process.env.RENDER
+      ? `${process.env.HOME}/.local/lib/python3.11/site-packages` 
+      : "";
+
     const python = spawn(PYTHON_EXECUTABLE, ["-u", RAG_SCRIPT], {
+      env: { 
+        ...process.env, 
+        PYTHONPATH: pythonPathEnv // Manually link hidden libraries
+      },
       stdio: ["pipe", "pipe", "pipe"]
     });
 
