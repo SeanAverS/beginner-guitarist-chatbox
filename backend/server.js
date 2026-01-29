@@ -9,6 +9,7 @@ import { devMessage, userMessage, successResponse } from "./utils/responses.js";
 import slugify from "slugify";
 import { spawn, execFile } from "child_process";
 import { fileURLToPath } from "url";
+import { exec } from "child_process";
 
 // This file: 
 // communicates between the frontend and Google's AI API
@@ -26,12 +27,10 @@ const app = express();
 app.use(express.json());
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true); 
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
     } else {
-      return callback(null, false); 
+      callback(new Error('Not allowed by CORS'));
     }
   },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
@@ -73,8 +72,8 @@ app.get('/api/get_chats', async (req, res) => {
 });
 
 // load chosen chat content 
-app.get('/api/load_chat/:filename', async (req, res) => {
-  const filename = req.params.filename;
+app.get('/api/load_chat/:chatFile', async (req, res) => {
+  const filename = req.params.chatFile;
   const savedChatsFolder = 'saved_chats';
   const filePath = path.join(savedChatsFolder, filename);
 
@@ -135,13 +134,11 @@ Query: ${firstMessage}`;
     console.log(`Chat history saved to ${savedChatsFilePath}`);
 
     // always send Access-Control-Allow-Origin header
-    res.setHeader('Access-Control-Allow-Origin', '*');
     res.json({ message: 'Chat history saved successfully!', chatFilename: savedFileName });
 
   } catch (err) {
     console.error("Error in /api/save_chat:", err);
     // ensure CORS header even on error
-    res.setHeader('Access-Control-Allow-Origin', '*');
     res.status(500).json({ error: 'Failed to save chat history', details: err.message });
   }
 });
@@ -236,76 +233,35 @@ app.post("/debug-rag", async (req, res) => {
 // RAG: format query for frontend 
 app.post("/rag", async (req, res) => {
   try {
-    const userQuery = req.body.query;
-    const chatFilename = req.body.chat_filename;
+    const { query, chat_filename } = req.body;
+    if (!query) return res.status(400).json({ error: "No query" });
 
-    if (!userQuery) {
-      return res.status(400).json({ error: "No query provided" });
-    }
-
-    // Make Render point to user installed python 
-    const PYTHON_EXECUTABLE = process.env.RENDER
-      ? path.join(process.env.HOME, ".local/bin/python3") 
-      : path.join(process.cwd(), "venv/bin/python3"); 
-
+    const PYTHON_EXE = process.env.RENDER 
+      ? "python3" 
+      : path.join(__dirname, "venv", "bin", "python3"); 
     const RAG_SCRIPT = path.resolve(__dirname, "rag_service.py");
 
-    // PYTHONPATH to find site-packages
-    const pythonPathEnv = process.env.RENDER
-      ? `${process.env.HOME}/.local/lib/python3.11/site-packages` 
-      : "";
-
-    const python = spawn(PYTHON_EXECUTABLE, ["-u", RAG_SCRIPT], {
-      env: { 
-        ...process.env, 
-        PYTHONPATH: pythonPathEnv // Manually link hidden libraries
-      },
-      stdio: ["pipe", "pipe", "pipe"]
+    const python = spawn(PYTHON_EXE, ["-u", RAG_SCRIPT], {
+      env: { ...process.env }
     });
-
 
     let ragOutput = "";
-    let errorString = "";
-
-    // send query and chat_filename to rag_service.py
-    python.stdin.write(JSON.stringify({ query: userQuery, chat_filename: chatFilename }));
+    python.stdin.write(JSON.stringify({ query, chat_filename }));
     python.stdin.end();
 
-    // response from rag_service.py (JSON)
-    python.stdout.on("data", (data) => {
-      console.log("🐍 Python output:", data.toString());
-      ragOutput += data.toString();
-    });
-
-    // errors from rag_service.py (JSON)
-    python.stderr.on("data", (data) => {
-      console.log("⚠️ Python error:", data.toString());
-      errorString += data.toString();
-    });
-
-    // format JSON from rag_service.py for frontend display
+    python.stdout.on("data", (data) => { ragOutput += data.toString(); });
+    
     python.on("close", (code) => {
-      if (errorString) console.error("Python RAG error:", errorString);
-
       try {
-        const response = JSON.parse(ragOutput);
-        res.json(response); // for frontend display
+        res.json(JSON.parse(ragOutput));
       } catch (err) {
-        console.error("Error parsing Python response:", err);
-        console.error("Full Python output:", ragOutput);
-        res.status(500).json({ error: "Failed to parse Python response" });
+        res.status(500).json({ error: "Python logic failed" });
       }
     });
-
-    
-
   } catch (err) {
-    console.error("Error running Python RAG service:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Server error" });
   }
 });
-
-import { exec } from "child_process";
 
 // Simple ping route
 app.get("/ping", (req, res) => {
