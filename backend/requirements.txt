@@ -1,8 +1,5 @@
---extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.2.2+cpu
-sentence-transformers==2.7.0
 faiss-cpu==1.8.0
 numpy<2.0.0
 google-generativeai
 python-dotenv
-slugify
+python-slugify
