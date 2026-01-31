@@ -38,6 +38,7 @@ export function useChatSidebar(setChosenChat, setChatFilename, chatFilename, han
   const handleLoadChat = async (filename) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/load_chat/${filename}`);
+      setChatFilename(filename);
       setChosenChat(response.data); 
       setIsSidebarOpen(false);
       setChatFilename(filename);

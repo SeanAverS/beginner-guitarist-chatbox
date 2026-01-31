@@ -15,6 +15,19 @@ export function useCurrentChat() {
   const [chatId, setChatId] = useState(null);
   const [chatFilename, setChatFilename] = useState(null);
 
+  // Ping Render immediately 
+  useEffect(() => {
+    const warmup = async () => {
+      try {
+        await fetch(`${API_BASE_URL}/ping`);
+        console.log("Ping sent");
+      } catch (err) {
+        console.log("Server is likely cold-starting");
+      }
+    };
+    warmup();
+  }, []);
+
   useEffect(() => {
     if (!chatId) {
       setChatId(Date.now().toString()); 
@@ -55,17 +68,20 @@ export function useCurrentChat() {
     try {
       // call RAG endpoint for current chat 
       const ragResult = await askRAG(userMessage.text, chatFilename);
+
       // RAG answer constructed form rag_service.py
       const aiMessage = {
-        text: ragResult?.answer || "Sorry, no answer was generated.",
+        text: ragResult?.answer || "Render is really slow on cold starts, please wait a moment 😄", 
         sender: "ai",
       };
 
-      const latestMessages = [...messages, userMessage, aiMessage];
-      setMessages(latestMessages);
+      // save to backend 
+      setMessages((prev) => {
+        const latest = [...prev, aiMessage]; 
+        handleSaveChat(latest); // Save the true "latest" version
+        return latest;
+      });
 
-      // save to backend
-      await handleSaveChat(latestMessages);
     } catch (error) {
       handleApiError(error, "Error sending message:", setMessages);
     } finally {
