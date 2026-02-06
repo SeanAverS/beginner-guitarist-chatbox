@@ -18,7 +18,7 @@ class GoogleEmbedder:
     def encode(self, texts, convert_to_numpy=True):
         # Call the Google API
         result = genai.embed_content(
-            model="models/embedding-001",
+            model="models/gemini-embedding-001",
             content=texts,
             task_type="retrieval_query"
         )
