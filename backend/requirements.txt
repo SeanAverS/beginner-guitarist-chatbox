@@ -1,4 +1,6 @@
 packaging
+fastapi
+uvicorn[standard]
 faiss-cpu==1.8.0
 numpy<2.0.0
 google-generativeai
