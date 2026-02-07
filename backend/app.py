@@ -32,3 +32,7 @@ def health_check():
 @app.get("/")
 def read_root():
     return {"message": "Guitar RAG API is running!"}
+
+@app.get("/api/get_chats")
+async def get_chats():
+    return []
