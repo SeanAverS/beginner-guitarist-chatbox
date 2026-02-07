@@ -20,11 +20,6 @@ function Sidebar({
   const [modalOpen, setModalOpen] = useState(false);
   const [chatToDelete, setChatToDelete] = useState(null);
 
-  const confirmDelete = (chat) => {
-    setChatToDelete(chat);
-    setModalOpen(true);
-  };
-
   const handleConfirmDelete = () => {
     if (chatToDelete) handleDeleteChat(chatToDelete.filename);
     setModalOpen(false);
