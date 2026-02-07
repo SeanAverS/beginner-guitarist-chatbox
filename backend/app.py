@@ -36,3 +36,23 @@ def read_root():
 @app.get("/api/get_chats")
 async def get_chats():
     return []
+
+@app.post("/api/save_chat")
+async def save_chat(data: dict):
+    return {"message": "Chat history saved successfully!", "chatFilename": "placeholder.json"}
+
+@app.get("/api/load_chat/{chatFile}")
+async def load_chat(chatFile: str):
+    return {"messages": []}
+
+@app.post("/api/rename_chat")
+async def rename_chat(data: dict):
+    return [] 
+
+@app.delete("/api/delete_chat/{filename}")
+async def delete_chat(filename: str):
+    return [] 
+
+@app.post("/api/ask")
+async def ask_placeholder(data: dict):
+    return {"text": "This endpoint is deprecated. Use /rag instead."}
