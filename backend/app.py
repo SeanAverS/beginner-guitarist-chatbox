@@ -33,13 +33,15 @@ def health_check():
 def read_root():
     return {"message": "Guitar RAG API is running!"}
 
+# These saved chats routes are only for my own local site, I return nothing in them to protect visitors privacy 
+
 @app.get("/api/get_chats")
 async def get_chats():
     return []
 
 @app.post("/api/save_chat")
 async def save_chat(data: dict):
-    return {"message": "Chat history saved successfully!", "chatFilename": "placeholder.json"}
+    return {"message": "Chat is not saved", "chatFilename": "nosave.json"}
 
 @app.get("/api/load_chat/{chatFile}")
 async def load_chat(chatFile: str):

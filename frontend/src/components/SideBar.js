@@ -62,6 +62,14 @@ function Sidebar({
     <div ref={sidebarRef} className={`sidebar ${isSidebarOpen ? "open" : ""}`}> 
       <div className="saved-chats-content">
         <h2>Saved Chats</h2>
+
+        <div className="sidebar-disclaimer">
+        <p>
+          <i className="fa-solid fa-shield-halved"></i> 
+          <strong>Privacy Note:</strong> Your chats will not be saved, this feature only works on my computer. Thanks for trying my app! 😁
+        </p>
+      </div>
+
         <ul>
             {/* display saved chats in sidebar */}
           {savedChats.map((chat) => {
